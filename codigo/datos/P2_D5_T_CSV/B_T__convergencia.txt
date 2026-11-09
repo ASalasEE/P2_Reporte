@@ -1,0 +1,28 @@
+DesignVariation : h='0.50800000000000001mm' Hb='7.1120000000000001mm' Hp='4.0640000000000001mm' L1='6mm' Ls='8mm' Mg='7mm' Pw='5.7000000000000002mm' Wb='1.1399999999999999mm' Ws='1.1399999999999999mm'
+Setup : Setup1
+
+==================
+Number of Passes
+Completed : 10
+Maximum   : 15
+Minimum   : 3
+==================
+Criterion : Max Mag. Delta S
+Target    : 0.005
+Current   : 0.0041836
+Target Consecutive Passes  : 2
+Current Consecutive Passes : 2
+Converged : Yes
+==================
+Pass Number|Solved Elements|Max Mag. Delta S|
+          1|           1200|             N/A|
+          2|           1561|         0.10472|
+          3|           2031|        0.028932|
+          4|           2391|        0.017818|
+          5|           3113|        0.021033|
+          6|           4050|       0.0056848|
+          7|           5270|       0.0060412|
+          8|           6855|       0.0056667|
+          9|           8916|       0.0032039|
+         10|          11598|       0.0041836|
+

@@ -1,0 +1,555 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\renewcommand{\tablename}{Tabla}
+\sisetup{output-decimal-marker={.}}
+\definecolor{verdeclaro}{RGB}{198,239,206}
+\newtcolorbox{idea}{colback=verdeclaro,colframe=verdeclaro!60!black,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{paso}[1]{colback=white,colframe=black!35,boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,title={#1},coltitle=black,colbacktitle=black!8,fonttitle=\bfseries}
+\setlist{itemsep=2pt,topsep=3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\title{\textbf{Guía para explicar el Proyecto 2}\\[4pt]\large Discontinuidad 1: curva de \ang{90} $\cdot$ Discontinuidad 2: cambio abrupto de ancho\\ Discontinuidad 3: gap en serie $\cdot$ Discontinuidad 4: cambio de material\\ Discontinuidad 5: unión en T}
+\author{Orlando Arturo Palma León}
+\date{19 de octubre de 2026}
+
+\begin{document}
+\maketitle
+
+Las referencias a figuras y tablas corresponden al reporte \emph{Proyecto 2. Análisis y simulación de discontinuidades en interconectores de microcinta}. Cada parte se puede exponer por separado; la Parte 6 sirve para cerrar uniendo las cinco.
+
+\part*{Parte 1. Curva de \ang{90}}
+
+\section*{1.1 La idea en 30 segundos}
+\begin{idea}
+``La curva de \ang{90} refleja porque la esquina tiene más carga que corriente. La esquina exterior es metal sobre tierra que almacena carga, pero la corriente toma el atajo por la esquina interior. Eso deja la misma capacitancia que un tramo recto y menos de la mitad de inductancia, así que la esquina se ve como un tramo de unos \SI{<<ZEQB>>}{\ohm} dentro de una línea de \SI{50}{\ohm}. Como esa reactancia crece con la frecuencia, la reflexión pasa de $-20$~dB a partir de \SI{<<F20>>}{GHz}. El chaflán quita esa carga sobrante y elimina la reflexión, pero la esquina sigue radiando porque la corriente sigue girando.''
+\end{idea}
+
+Si solo puedes decir una cosa, di esta: \textbf{la reflexión viene de un desequilibrio entre la energía eléctrica y la magnética almacenadas en la esquina, y ese desequilibrio pesa más conforme sube la frecuencia.}
+
+\section*{1.2 Guion de exposición}
+Cada paso indica qué mostrar y qué decir. El orden sigue la lógica ``validar, observar, explicar, comprobar''.
+
+\begin{paso}{Paso 1 --- El montaje (Figuras <<FIG:fig:geo>> y <<FIG:fig:hfss3d>> del reporte)}
+\textbf{Muestra:} la geometría de las tres estructuras y los modelos 3D de HFSS.\\
+\textbf{Di:} ``Diseñé una línea de \SI{50}{\ohm} en RO4003C de \SI{0.508}{mm} ($W=\SI{1.14}{mm}$). Simulé la línea recta de referencia, la curva y la curva con chaflán, con la misma caja y los mismos puertos. Con de-embedding moví los planos de referencia hasta el borde de la esquina, para que los resultados describan solo la discontinuidad.''
+\end{paso}
+
+\begin{paso}{Paso 2 --- La referencia valida el montaje (Figura <<FIG:fig:s11>>)}
+\textbf{Muestra:} la curva azul de $|S_{11}|$.\\
+\textbf{Di:} ``La línea recta queda por debajo de \SI{<<REFMAX>>}{dB} en toda la banda. Eso me dice dos cosas: el montaje está bien, y cualquier reflexión menor a ese nivel no la puedo distinguir del error del modelo.''
+\end{paso}
+
+\begin{paso}{Paso 3 --- Lo que se observa (Figuras <<FIG:fig:s11>> y <<FIG:fig:gamma>>)}
+\textbf{Muestra:} la curva naranja.\\
+\textbf{Di:} ``La curva sin compensar refleja cada vez más: cruza $-20$~dB a \SI{<<F20>>}{GHz}, que equivale a 1\,\% de la potencia reflejada y un VSWR de 1.22, y llega a un VSWR de <<VSWR20B>> a \SI{20}{GHz}. Ese es el criterio que usé para decir que el efecto es significativo.''
+\end{paso}
+
+\begin{paso}{Paso 4 --- Por qué ocurre (Figuras <<FIG:fig:smith>>, <<FIG:fig:lc>> y <<FIG:fig:carga>>)}
+\textbf{Muestra:} la carta de Smith, la extracción de $L$ y $C$, y la figura de carga y corriente en la esquina.\\
+\textbf{Di:} ``En la carta de Smith la trayectoria cae en la mitad inferior: la discontinuidad es capacitiva. Para saber por qué, extraje un circuito equivalente en T. La esquina tiene la misma capacitancia que un tramo recto de igual área, \SI{<<CB>>}{pF} contra \SI{<<CA>>}{pF}, pero su inductancia es menos de la mitad, \SI{<<LB>>}{nH} contra \SI{<<LA>>}{nH}. Eso pasa porque la corriente toma el camino corto por la esquina interior, mientras que la esquina exterior sigue acumulando carga. Con los campos de HFSS se ve directamente: la esquina exterior tiene <<HCEXT>> veces la carga de un tramo recto, pero solo <<HJEXT>> veces su corriente, y el <<HIIN>>\,\% de la corriente pasa por la mitad interior de la esquina. El resultado es un tramo local de \SI{<<ZEQB>>}{\ohm}.''
+\end{paso}
+
+\begin{paso}{Paso 5 --- A partir de qué frecuencia y por qué (Figura <<FIG:fig:escala>>)}
+\textbf{Muestra:} la ecuación $|\Gamma|\approx\omega\tau/2$ y la figura de la onda sobre la curva a 2, 7 y \SI{20}{GHz}.\\
+\textbf{Di:} ``Por el teorema de Poynting complejo, la reactancia es $2\omega(W_m-W_e)$ entre $\tfrac12|I|^2$. Mientras la esquina sea pequeña, la diferencia de energías no depende de la frecuencia, pero la reactancia sí, por el factor $\omega$. Con el valor extraído, $\tau=\SI{<<TAUB>>}{ps}$, la fórmula predice $|\Gamma|=0.1$ a \SI{<<FPRED>>}{GHz}, y la simulación da \SI{<<F20>>}{GHz}. En la figura se ve que a esa frecuencia la esquina mide apenas $\lambda_g/<<FRAC7>>$ y la onda cambia solo \ang{<<FASE7>>} a través de ella: no hace falta que sea grande, basta que la reactancia deje de ser despreciable frente a \SI{50}{\ohm}. A \SI{20}{GHz} el desfase ya es de \ang{<<FASE20>>} y la esquina deja de comportarse como un punto.''
+\end{paso}
+
+\begin{paso}{Paso 6 --- Comprobación con el chaflán y la radiación (Figuras <<FIG:fig:rad>> y <<FIG:fig:imagen>>)}
+\textbf{Muestra:} la curva verde, la figura de destino de la potencia y el esquema de la tira con su imagen.\\
+\textbf{Di:} ``Si mi explicación es correcta, quitar la esquina exterior debería quitar el problema. El chaflán quita justo el metal que tenía carga sin corriente; en la Figura <<FIG:fig:carga>>b se ve que todo el metal que queda conduce corriente. La capacitancia baja un <<DCPCT>>\,\% sin que la inductancia cambie mucho, la esquina vuelve a verse como \SI{<<ZEQC>>}{\ohm} y la reflexión desaparece. Pero la radiación no: ambas curvas radian alrededor del 4--5\,\% a \SI{20}{GHz}, porque la radiación viene de que la corriente cambia de dirección. En un tramo recto la corriente de la tira y su imagen en el plano de tierra van juntas y sus campos se cancelan; en la esquina la corriente gira y esa cancelación se rompe, y eso el chaflán no lo corrige.''
+\end{paso}
+
+\section*{1.3 Números que conviene saber de memoria}
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Dato & Valor \\
+\midrule
+Sustrato & RO4003C, $h=\SI{0.508}{mm}$, $\varepsilon_r=3.55$ \\
+Línea de \SI{50}{\ohm} & $W=\SI{1.14}{mm}$, $\varepsilon_{\mathrm{eff}}=<<EEFF>>$ \\
+$\lambda_g$ a 10 y \SI{20}{GHz} & \SI{<<LG10>>}{mm} y \SI{<<LG20>>}{mm} \\
+Cruce de $-20$~dB (curva) & \SI{<<F20>>}{GHz} \\
+VSWR a \SI{20}{GHz} (curva / chaflán) & <<VSWR20B>> / $\leq <<VSWRCMAX>>$ \\
+$C$ y $L$ de la esquina & \SI{<<CB>>}{pF}, \SI{<<LB>>}{nH} por rama \\
+$C$ y $L$ del tramo recto & \SI{<<CA>>}{pF}, \SI{<<LA>>}{nH} por rama \\
+$Z_{eq}$ (curva / chaflán) & \SI{<<ZEQB>>}{\ohm} / \SI{<<ZEQC>>}{\ohm} \\
+Radiada a \SI{20}{GHz} (curva / chaflán) & \SI{<<RADB20>>}{\percent} / \SI{<<RADC20>>}{\percent} \\
+IL a \SI{20}{GHz} (curva) & \SI{<<ILB20>>}{dB}, de los cuales \SI{<<ILRB20>>}{dB} por reflexión \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{1.4 Preguntas probables y cómo responderlas}
+\begin{description}[style=nextline,leftmargin=0pt,itemsep=5pt]
+\item[¿Por qué usaste parámetros $S$ y no voltajes o corrientes?]
+A estas frecuencias no hay un voltaje único bien definido entre la tira y la tierra, pero sí ondas incidentes y reflejadas. Los parámetros $S$ miden directamente reflexión y transmisión, que es lo que pide el proyecto, y de ellos salen $|\Gamma|$, VSWR, RL e IL.
+
+\item[¿Para qué sirve el de-embedding?]
+Para quitar el efecto de los \SI{6}{mm} de línea entre cada puerto y la esquina. Sin él, los resultados mezclarían la discontinuidad con la fase y las pérdidas de la línea de alimentación. Lo verifiqué: sin de-embedding aparece una pérdida adicional de \SI{<<DEEMB10DB>>}{dB} a \SI{10}{GHz}, del orden de los \SI{<<FEED10>>}{dB} esperados para esos \SI{12}{mm} de línea.
+
+\item[¿Cómo sabes que la simulación es confiable?]
+Por tres cosas: la malla convergió con $\max|\Delta S|<0.005$; la línea recta, que no debería reflejar, queda por debajo de \SI{-30}{dB}; y el valor de $\tau$ extraído predice el cruce de $-20$~dB con un error menor a \SI{0.5}{GHz}.
+
+\item[¿De dónde salen las figuras de carga y corriente?]
+De HFSS: exporté los campos $\mathbf{E}$ y $\mathbf{H}$ a \SI{5}{GHz} justo debajo y encima de la traza, y calculé la carga con el salto de $D$ normal y la corriente con el salto de $H$ tangencial. Además coinciden con la extracción del circuito: la carga total en la esquina da <<HQB>> veces la de un tramo recto, y el cociente de capacitancias de los parámetros $S$ da <<RCB>>.
+
+\item[¿Por qué la referencia no da $S_{11}=-\infty$?]
+Porque el puerto de onda tiene bordes conductores y la línea que lo rodea es abierta; esa transición deja un pequeño residuo de reflexión y de pérdida aparente. Es común a todos los diseños, por eso lo cancelo comparando contra la referencia.
+
+\item[¿Por qué dices que la esquina es capacitiva y no inductiva?]
+Por tres evidencias independientes que coinciden: la trayectoria en la carta de Smith está en la mitad inferior, el ángulo de $S_{11}$ es cercano a \ang{-90}, y la extracción da $\tau=CZ_0-2L/Z_0>0$.
+
+\item[¿Por qué el criterio de $-20$~dB?]
+Es un criterio de diseño común: equivale a reflejar el 1\,\% de la potencia, $|\Gamma|=0.1$ y VSWR $=1.22$. Con otro criterio cambia el número, pero no la explicación: la reflexión crece de forma continua con $\omega$.
+
+\item[¿Por qué el chaflán no elimina la radiación?]
+Porque son dos mecanismos distintos. La reflexión viene de la carga en exceso de la esquina exterior, y eso el chaflán sí lo corrige. La radiación viene de que la corriente cambia de dirección: en una línea recta su campo se cancela con el de su imagen en el plano de tierra, y en la esquina esa cancelación ya no es completa.
+
+\item[¿Cómo separaste la radiación de las pérdidas de cobre y dieléctrico?]
+Simulé cada estructura dos veces, con y sin pérdidas de material. La versión sin pérdidas solo puede perder potencia por radiación, y al restarle la referencia sin pérdidas se cancela el residuo numérico común. Lo que cambia entre la versión con y sin pérdidas es la disipación.
+
+\item[¿Qué pasaría con un sustrato más grueso?]
+La línea de \SI{50}{\ohm} sería más ancha y la esquina más grande eléctricamente, así que el efecto aparecería a menor frecuencia. La radiación también crecería, porque aumenta con el espesor eléctrico del sustrato.
+
+\item[¿La versión estudiantil limitó los resultados?]
+No en la curva: sus diseños usaron como máximo \num{<<TETSMAX1>>} elementos, lejos del límite (en el cambio de ancho, una malla de \num{70962} elementos sí fue rechazada).
+\end{description}
+
+\section*{1.5 Errores que conviene evitar al explicarlo}
+\begin{itemize}
+\item \textbf{Decir solo ``$S_{11}$ aumentó''.} Siempre completa con el porqué: desequilibrio entre $L$ y $C$, tramo de \SI{<<ZEQB>>}{\ohm}, reactancia proporcional a $\omega$.
+\item \textbf{Confundir reflexión con radiación.} La reflexión regresa al puerto 1; la radiación sale al espacio. El chaflán resuelve la primera, no la segunda.
+\item \textbf{Decir que la esquina ``agrega inductancia''.} Es al revés: le \emph{falta} inductancia respecto a un tramo recto, y por eso domina la capacitancia.
+\item \textbf{Presentar la pérdida aparente de la referencia como pérdida real.} Es un residuo numérico del modelo, y precisamente para eso sirve el caso de referencia.
+\item \textbf{Afirmar valores de $S_{11}$ por debajo de \SI{-30}{dB} para el chaflán.} El modelo no resuelve reflexiones menores a ese nivel; lo correcto es decir $|S_{11}|<\SI{-30}{dB}$.
+\end{itemize}
+
+\section*{1.6 Una analogía que ayuda}
+Piensa en un auto que toma una curva cerrada en una pista ancha (es lo que muestra la Figura <<FIG:fig:carga>>b del reporte): no recorre la esquina exterior, la corta por dentro. Con la corriente pasa igual. El metal de la esquina exterior queda como ``pista sin usar'': no conduce corriente, pero sigue ahí, cargándose frente al plano de tierra. El chaflán equivale a quitar ese pedazo de pista que nadie usa.
+
+
+\newpage
+\part*{Parte 2. Cambio abrupto de ancho}
+
+\section*{2.1 La idea en 30 segundos}
+\begin{idea}
+``Al empalmar una pista de \SI{50}{\ohm} con una de \SI{100}{\ohm}, un tercio de la amplitud de la onda regresa, el <<D2_PREFB>>\,\% de la potencia, y eso pasa desde las frecuencias más bajas: cada línea impone su propio cociente entre voltaje y corriente, y en la unión no pueden cumplirse los dos sin una onda reflejada. Que el empalme sea brusco solo agrega dos parásitos diminutos, unos \SI{<<D2_CEXC>>}{fF} por la carga que se acumula en los hombros del escalón y unos \SI{<<D2_LEXC>>}{pH} porque la corriente se aprieta al entrar en la pista angosta. Equivalen a decenas de micrómetros de línea y solo giran la fase de la reflexión unos \ang{<<D2_ANGB20ABS>>} a \SI{20}{GHz}. Una transición gradual de \SI{10}{mm} elimina la reflexión por encima de \SI{<<D2_FT20>>}{GHz}, cuando mide más de $<<D2_LTLGU>>\,\lambda_g$, pero a baja frecuencia refleja igual que el escalón.''
+\end{idea}
+
+Si solo puedes decir una cosa, di esta: \textbf{la reflexión del escalón la decide el cociente de impedancias, no la frecuencia; la frecuencia solo decide si una transición es ``abrupta'' o ``gradual''.}
+
+\section*{2.2 Guion de exposición}
+
+\begin{paso}{Paso 1 --- El montaje (Figuras <<FIG:fig:dgeo>> y <<FIG:fig:dhfss>>)}
+\textbf{Muestra:} el escalón, la transición gradual y las dos líneas de referencia.\\
+\textbf{Di:} ``Uní la línea de \SI{50}{\ohm} ($W_1=\SI{1.14}{mm}$) con una de \SI{100}{\ohm} ($W_2=\SI{0.29}{mm}$) en el mismo sustrato. Escogí \SI{100}{\ohm} porque la teoría da un número fácil de verificar: $\Gamma_0=1/3$, VSWR de 2. Además simulé una transición gradual de \SI{10}{mm}, que hace el papel del chaflán de la curva, y dos líneas rectas de referencia, una de cada ancho. Aquí no renormalicé a \SI{50}{\ohm}: cada puerto queda referido a su propia línea, como si cada una continuara indefinidamente.''
+\end{paso}
+
+\begin{paso}{Paso 2 --- La corrección de los puertos (Figura <<FIG:fig:dcorr>>)}
+\textbf{Muestra:} la ondulación de $|S_{11}|$ en las referencias y el escalón antes y después de corregir.\\
+\textbf{Di:} ``Las referencias, que tienen longitud cero entre planos, deberían dar $S_{11}=0$. Dan hasta \SI{<<D2_FLOOR50>>}{dB} con una ondulación que corresponde a un pequeño desacople entre el puerto y la línea en la malla, el mismo residuo que vi en la curva. Lo modelé, armé una caja de error para cada lado y la quité del escalón y de la transición. Para comprobarlo usé algo que no depende del modelo: en una unión sin pérdidas $|S_{11}|$ y $|S_{22}|$ deben ser iguales, y su diferencia bajó de <<D2_ASIMB0_RAW>> a <<D2_ASIMB0_COR>>.''
+\end{paso}
+
+\begin{paso}{Paso 3 --- Lo que se observa (Figuras <<FIG:fig:dsdb>> y <<FIG:fig:dgamma>>)}
+\textbf{Muestra:} la línea naranja casi horizontal y la verde que cae.\\
+\textbf{Di:} ``El escalón refleja $|\Gamma|=<<D2_GB01>>$ ya a \SI{0.1}{GHz}, exactamente lo que predice $(Z_2-Z_1)/(Z_2+Z_1)$, y se queda ahí hasta \SI{20}{GHz}, con un VSWR entre <<D2_VBMIN>> y <<D2_VBMAX>>. Es la misma reflexión desde los dos lados. La transición empieza igual, pero baja de $-20$~dB a \SI{<<D2_FT20>>}{GHz} y tiene nulos en \SI{<<D2_FTN1>>}{} y \SI{<<D2_FTN2>>}{GHz}; la teoría de la transición exponencial, sin ajustar nada, da \SI{<<D2_FNULL>>}{} y \SI{<<D2_FNULL2>>}{GHz}.''
+\end{paso}
+
+\begin{paso}{Paso 4 --- Por qué refleja y qué hacen los parásitos (Figuras <<FIG:fig:dfase>> y <<FIG:fig:dcarga>>)}
+\textbf{Muestra:} la fase de la reflexión y la figura de carga y corriente.\\
+\textbf{Di:} ``La impedancia de una línea la fija su sección transversal: la pista angosta tiene la mitad de capacitancia y casi el doble de inductancia por unidad de longitud. La onda llega con $V/I=\SI{50}{\ohm}$ y la línea siguiente solo acepta \SI{100}{\ohm}; la única forma de cumplir la continuidad es que parte de la onda regrese. Encima de eso están los parásitos. En los campos de HFSS se ven: los hombros del escalón tienen <<D2_CHOM>> veces la carga de la línea ancha, porque la parte que no continúa termina como un extremo abierto, y justo antes del escalón el <<D2_ICEN>>\,\% de la corriente ya va por la franja central, contra el <<D2_ICENL>>\,\% lejos de él. Eso es una capacitancia de \SI{<<D2_CEXC>>}{fF} y una inductancia de \SI{<<D2_LEXC>>}{pH}. No cambian $|\Gamma|$, solo su fase: \ang{<<D2_ANGB20>>} a \SI{20}{GHz} desde la línea de \SI{50}{\ohm}, y casi nada desde la de \SI{100}{\ohm}, porque de ese lado la capacitancia y la inductancia se cancelan.''
+\end{paso}
+
+\begin{paso}{Paso 5 --- A partir de qué frecuencia (Figura <<FIG:fig:descala>>)}
+\textbf{Muestra:} la reflexión contra $L_t/\lambda_g$ y la onda a 2 y \SI{10}{GHz}.\\
+\textbf{Di:} ``Con el criterio de $-20$~dB, el escalón es significativo en toda la banda: está 10~dB arriba del umbral desde \SI{0.1}{GHz}. No hay frecuencia a partir de la cual aparezca, al revés que en la curva. Lo que sí depende de la frecuencia es si una transición cuenta como abrupta. A \SI{2}{GHz} los \SI{10}{mm} son $<<D2_LTLG2>>\,\lambda_g$: todas las pequeñas reflexiones de la transición llegan en fase y se suman, y refleja igual que el escalón. A \SI{10}{GHz} son $<<D2_LTLG10>>\,\lambda_g$: las reflexiones de la primera y la segunda mitad llegan en contrafase y se cancelan. `Abrupto' significa corto frente a $\lambda_g/2$.''
+\end{paso}
+
+\begin{paso}{Paso 6 --- A dónde va la potencia (Figura <<FIG:fig:dpot>>)}
+\textbf{Muestra:} el balance de potencia.\\
+\textbf{Di:} ``El escalón pierde \SI{<<D2_ILB01>>}{dB}, y todo es reflexión: coincide con $10\log(1-\Gamma_0^2)$. No radia, a diferencia de la curva, porque la corriente no cambia de dirección y la tira y su imagen en el plano de tierra siguen cancelando sus campos. La transición casi no refleja a alta frecuencia, pero disipa el \SI{<<D2_PDISC20>>}{\percent} a \SI{20}{GHz} porque agrega \SI{10}{mm} de línea: ese es su costo, además del espacio.''
+\end{paso}
+
+\section*{2.3 Números que conviene saber de memoria}
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Dato & Valor \\
+\midrule
+Líneas & $W_1=\SI{1.14}{mm}$ (\SI{50}{\ohm}), $W_2=\SI{0.29}{mm}$ (\SI{<<D2_Z2Q>>}{\ohm}), $W_1/W_2=<<D2_RGUP>>$ \\
+$\Gamma_0$ ideal & <<D2_G0Q>> (VSWR <<D2_VSWR0Q>>, <<D2_PREF0Q>>\,\% de la potencia) \\
+$|\Gamma|$ del escalón (0.1 y \SI{20}{GHz}) & <<D2_GB01>> y <<D2_GB20>> \\
+Pérdida de inserción del escalón & \SI{<<D2_ILB01>>}{dB}, toda por reflexión \\
+Parásitos (HFSS / Gupta) & $C=\SI{<<D2_CEXC>>}{fF}$ / \SI{<<D2_CGUP>>}{fF}; $L_s=\SI{<<D2_LEXC>>}{pH}$ / \SI{<<D2_LGUP>>}{pH} \\
+Equivalen a & \SI{<<D2_DLC>>}{\micro\metre} de línea de \SI{50}{\ohm} y \SI{<<D2_DLL>>}{\micro\metre} de línea de \SI{100}{\ohm} \\
+Fase de $S_{11}$ a \SI{20}{GHz} & \ang{<<D2_ANGB20>>} (Gupta: \ang{<<D2_ANGGUP20>>}) \\
+Transición: $-20$~dB desde & \SI{<<D2_FT20>>}{GHz}, cuando $L_t=<<D2_LTLGU>>\,\lambda_g$ \\
+Transición: nulos (HFSS / teoría) & \SI{<<D2_FTN1>>}{} y \SI{<<D2_FTN2>>}{GHz} / \SI{<<D2_FNULL>>}{} y \SI{<<D2_FNULL2>>}{GHz} \\
+Radiación (ambas) & $<\SI{<<D2_PRADCMAX>>}{\percent}$, incertidumbre $\pm\SI{<<D2_PISO2>>}{\percent}$ \\
+Disipación de la transición a \SI{20}{GHz} & \SI{<<D2_PDISC20>>}{\percent} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{2.4 Preguntas probables y cómo responderlas}
+\begin{description}[style=nextline,leftmargin=0pt,itemsep=5pt]
+\item[¿Por qué no renormalizaste a \SI{50}{\ohm} como en la curva?]
+Porque el puerto 2 está sobre una línea de \SI{100}{\ohm}. Si lo renormalizara a \SI{50}{\ohm}, $S_{11}$ incluiría también la reflexión entre esa línea y una carga de \SI{50}{\ohm}, que no existe en el circuito real. Referir cada puerto a su propia línea equivale a que cada línea continúe indefinidamente, que es justo la situación de un empalme.
+
+\item[Si la discontinuidad es pequeña, ¿por qué refleja a baja frecuencia?]
+Porque su efecto principal no viene de su tamaño sino de que las dos líneas tienen distinta impedancia característica. Eso lo fija la sección transversal de cada línea, y la sección no cambia con la frecuencia. Lo que sí es pequeño, y por eso apenas se nota, son los parásitos de la unión.
+
+\item[¿No estás ``arreglando'' los datos con la corrección de puertos?]
+La corrección quita algo que se mide de forma independiente: el error que muestran las líneas de referencia, que deberían ser perfectas. Se comprueba con un criterio que no depende de ella, la igualdad de $|S_{11}|$ y $|S_{22}|$ sin pérdidas. Y sin corregir, el ajuste del circuito tiene un residuo cuatro veces mayor y la capacitancia sale al doble, \SI{<<D2_CRAW>>}{fF}.
+
+\item[¿Por qué tus valores de $C$ y $L$ no coinciden con Gupta?]
+Las fórmulas de Gupta son ajustes empíricos válidos hasta $W_1/W_2=3.5$, y aquí la relación es <<D2_RGUP>>. Dan el mismo orden de magnitud y la misma conclusión: domina la capacitancia vista desde la línea de \SI{50}{\ohm}. La diferencia en la fase a \SI{20}{GHz} es de menos de \ang{2}.
+
+\item[¿Qué es el factor $k$?]
+En una línea que no es TEM pura no hay un único voltaje y la impedancia depende de cómo se defina. HFSS reporta una definición, y el escalón ``ve'' un cociente $Z_2/Z_1$ un \SI{<<D2_KPCT>>}{\percent} menor. Dejar $k$ libre evita que esa diferencia, que no depende de la frecuencia, se confunda con una capacitancia o una inductancia.
+
+\item[¿Por qué el escalón no radia y la curva sí?]
+Porque la radiación de la curva viene de que la corriente cambia de dirección y deja de cancelarse con su imagen en el plano de tierra. En el escalón la corriente sigue en la misma dirección; solo cambia el ancho.
+
+\item[¿Qué otra solución hay a baja frecuencia?]
+Ninguna transición de longitud finita resuelve el desacople a frecuencias suficientemente bajas. Para eso se usa una red de acoplamiento, como un transformador de $\lambda/4$ de $\sqrt{Z_1Z_2}\approx\SI{71}{\ohm}$, que a cambio solo funciona en una banda alrededor de su frecuencia de diseño.
+
+\item[¿Qué pasaría con una relación de anchos menor?]
+$\Gamma_0$ sería menor, porque las impedancias estarían más cerca, y los parásitos también, porque hay menos tira que termina en los hombros y menos concentración de corriente. El comportamiento con la frecuencia sería el mismo.
+
+\item[¿Por qué una de las simulaciones se detuvo antes?]
+La transición sin pérdidas es la estructura más larga y en el pase 15 su malla excedía el límite de la versión estudiantil. En el pase 14, con \num{<<D2_NMAX2>>} elementos, ya cumplía el criterio $\max|\Delta S|<0.005$, así que se detuvo ahí.
+\end{description}
+
+\section*{2.5 Errores que conviene evitar al explicarlo}
+\begin{itemize}
+\item \textbf{Decir que el escalón ``empieza a afectar'' a cierta frecuencia.} Afecta desde DC; lo que cambia con la frecuencia es la fase y la utilidad de una transición.
+\item \textbf{Atribuir la reflexión a los parásitos.} La reflexión es la diferencia de impedancias; los parásitos solo la giran unos grados.
+\item \textbf{Decir que la transición gradual ``elimina la reflexión''.} La elimina solo cuando su longitud es comparable con $\lambda_g/2$; a \SI{2}{GHz} refleja igual que el escalón.
+\item \textbf{Comparar $S_{11}$ del escalón con la referencia de \SI{50}{\ohm} renormalizada.} Las normalizaciones son distintas en las dos discontinuidades y hay que decirlo.
+\end{itemize}
+
+\section*{2.6 Una analogía que ayuda}
+Piensa en una cuerda gruesa atada a una cuerda delgada. Si agitas la gruesa, parte del pulso rebota en el nudo, por despacio que lo agites: rebota porque las cuerdas son distintas, no por la rapidez. Si en vez de un nudo las unieras con un tramo que se adelgaza poco a poco, los pulsos cortos (frecuencia alta) pasarían casi sin rebotar, pero un vaivén lento, cuya longitud es mucho mayor que el tramo de transición, seguiría ``viendo'' un cambio brusco.
+
+\newpage
+\part*{Parte 3. Gap en serie}
+
+\section*{3.1 La idea en 30 segundos}
+\begin{idea}
+``Un gap corta el camino de la corriente. En el extremo la corriente tiene que valer cero, así que la onda rebota casi completa, desde DC. Lo único que cruza el corte es la corriente de desplazamiento entre los dos extremos, como en un capacitor: con \SI{0.1}{mm} de separación la capacitancia es de unos \SI{<<D3_CG0P1>>}{fF}, deja pasar \SI{<<D3_S21G1_1>>}{dB} a \SI{1}{GHz} y \SI{<<D3_S21G1_20>>}{dB} a \SI{20}{GHz}, unos 20~dB más por cada década. Al abrir el corte, el campo del extremo deja de llegar al otro lado y baja a tierra: la capacitancia de acoplamiento se va a cero y la del extremo a tierra tiende a la de un extremo abierto. Además, el extremo abierto radia, como el borde de una antena de parche.''
+\end{idea}
+
+Si solo puedes decir una cosa, di esta: \textbf{en el gap la reflexión es casi total desde DC; lo que depende de la frecuencia es cuánto pasa, y pasa solo por acoplamiento capacitivo.}
+
+\section*{3.2 Guion de exposición}
+
+\begin{paso}{Paso 1 --- El montaje (Figura <<FIG:fig:d3geo>>)}
+\textbf{Muestra:} la estructura y la fila de los cinco gaps a la misma escala.\\
+\textbf{Di:} ``Corté la línea de \SI{50}{\ohm} con cinco separaciones, de \SI{0.1}{} a \SI{3}{mm}. Aquí el tamaño importa más que en las otras discontinuidades, así que en vez de una sola geometría estudié cómo cambia todo con $s$. El de \SI{3}{mm} es prácticamente dos extremos abiertos y me sirve de límite. Los planos de referencia quedan en las caras de los extremos, y corregí los puertos con la línea de referencia, como en el cambio de ancho.''
+\end{paso}
+
+\begin{paso}{Paso 2 --- Lo que se observa (Figura <<FIG:fig:d3s>> y Tabla <<FIG:tab:d3sparam>>)}
+\textbf{Muestra:} las rectas de $|S_{21}|$ en escala logarítmica.\\
+\textbf{Di:} ``$|S_{11}|$ es casi 1 en todos los casos: el gap refleja casi todo. Lo que cambia es la transmisión: en escala logarítmica son rectas con pendiente de unos 20~dB por década, que es la firma de un capacitor en serie. Solo el gap de \SI{0.1}{mm} deja pasar más del 10\,\% de la potencia, y eso a partir de \SI{<<D3_F10DB>>}{GHz}.''
+\end{paso}
+
+\begin{paso}{Paso 3 --- El circuito equivalente (Figura <<FIG:fig:d3cap>> y Tabla <<FIG:tab:d3circ>>)}
+\textbf{Muestra:} $C_g$ y $C_p$ contra la separación.\\
+\textbf{Di:} ``Extraje una red $\pi$: $C_g$ entre los extremos y $C_p$ de cada extremo a tierra. $C_g$ cae de \SI{<<D3_CG0P1>>}{fF} a menos de \SI{1}{fF}, y $C_p$ sube de \SI{<<D3_CP0P1>>}{} a \SI{<<D3_CP3P0>>}{fF}. A partir de \SI{0.5}{mm} la suma se queda en unos \SI{<<D3_CT1P0>>}{fF}: el extremo guarda la misma carga y solo cambia a dónde van sus líneas de campo. Con \SI{3}{mm}, $C_p$ equivale a alargar la línea \SI{<<D3_DLEXT>>}{mm}; la fórmula de Hammerstad da \SI{<<D3_DLOC>>}{mm}.''
+\end{paso}
+
+\begin{paso}{Paso 4 --- Por qué ocurre (Figura <<FIG:fig:d3campos>>)}
+\textbf{Muestra:} la carga con signo y las líneas de campo en el corte vertical.\\
+\textbf{Di:} ``En el extremo la corriente se anula, así que se forma una onda estacionaria con un máximo de voltaje ahí. Ese voltaje carga el extremo, y la carga reparte su campo entre la tierra y el extremo de enfrente. Con \SI{0.2}{mm}, el extremo derecho tiene una carga opuesta del <<D3_RQ02>>\,\% de la del izquierdo; con \SI{1}{mm}, solo del <<D3_RQ10>>\,\%. El circuito extraído predice <<D3_RC02>>\,\% y <<D3_RC10>>\,\%. En las líneas de campo se ve directamente: con el gap angosto muchas cruzan al otro lado, con el ancho casi todas bajan a tierra.''
+\end{paso}
+
+\begin{paso}{Paso 5 --- A partir de qué frecuencia}
+\textbf{Muestra:} la ecuación $|S_{21}|\approx 2\omega C_gZ_0$ y la columna $f_c$ de la Tabla <<FIG:tab:d3circ>>.\\
+\textbf{Di:} ``El gap es significativo en toda la banda: a DC es un circuito abierto, y aun a \SI{20}{GHz} refleja al menos el <<D3_PR1_20>>\,\% de la potencia. La frecuencia solo decide cuánto pasa, porque la corriente de desplazamiento por un capacitor crece con $\omega$. Para que el gap fuera transparente, la reactancia de $C_g$ tendría que ser pequeña frente a \SI{100}{\ohm}, y eso ocurre hasta \SI{<<D3_FCORTE0P1>>}{GHz} en el gap más angosto. Por eso un corte simple es un mal capacitor de bloqueo de DC; en la práctica se usan capacitores interdigitales o líneas acopladas.''
+\end{paso}
+
+\begin{paso}{Paso 6 --- Radiación (Figura <<FIG:fig:d3pot>>)}
+\textbf{Muestra:} la potencia radiada.\\
+\textbf{Di:} ``Lo que no se refleja ni se transmite es casi todo radiación: \SI{<<D3_PRAD5>>}{\percent} a \SI{5}{GHz}, \SI{<<D3_PRAD10>>}{\percent} a \SI{10}{GHz} y de 3 a 5\,\% a \SI{20}{GHz}. Aquí no viene de un giro de la corriente, como en la curva, sino del extremo abierto: el campo de borde entre el extremo y la tierra es una pequeña abertura radiante, la misma que usan las antenas de parche. Casi no depende de $s$, porque el extremo izquierdo está igual de cargado en todos los casos.''
+\end{paso}
+
+\section*{3.3 Números que conviene saber de memoria}
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Dato & Valor \\
+\midrule
+Separaciones & 0.1, 0.2, 0.5, 1 y \SI{3}{mm} ($s/W$ de 0.09 a 2.6) \\
+$|S_{11}|$ & $\geq <<D3_GMIN3>>$ en todos los casos \\
+Pendiente de $|S_{21}|$ & <<D3_PENDMIN>> a <<D3_PENDMAX>>~dB por década \\
+$|S_{21}|$, $s=\SI{0.1}{mm}$ & \SI{<<D3_S21G1_1>>}{dB} a \SI{1}{GHz}; \SI{<<D3_S21G1_20>>}{dB} a \SI{20}{GHz}; $>-10$~dB desde \SI{<<D3_F10DB>>}{GHz} \\
+$C_g$ (0.1 / 0.2 / 0.5 / \SI{1}{mm}) & <<D3_CG0P1>> / <<D3_CG0P2>> / <<D3_CG0P5>> / <<D3_CG1P0>> fF \\
+$C_p$ (0.1 / 0.2 / 0.5 / 1 / \SI{3}{mm}) & <<D3_CP0P1>> / <<D3_CP0P2>> / <<D3_CP0P5>> / <<D3_CP1P0>> / <<D3_CP3P0>> fF \\
+Extremo abierto (HFSS / Hammerstad) & $\Delta\ell=\SI{<<D3_DLEXT>>}{mm}$ / \SI{<<D3_DLOC>>}{mm} \\
+Carga inducida (campos / circuito) & <<D3_RQ02>> / <<D3_RC02>>\,\% ($s=\SI{0.2}{mm}$); <<D3_RQ10>> / <<D3_RC10>>\,\% ($s=\SI{1}{mm}$) \\
+Radiación (5, 10 y \SI{20}{GHz}) & <<D3_PRAD5>>, <<D3_PRAD10>> y <<D3_PRAD20MIN>>--<<D3_PRAD20MAX>>\,\%, $\pm$<<D3_PISO3>>\,\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{3.4 Preguntas probables y cómo responderlas}
+\begin{description}[style=nextline,leftmargin=0pt,itemsep=5pt]
+\item[¿Por qué simulaste cinco separaciones y no una?]
+Porque en el gap el tamaño cambia el mecanismo: con el corte angosto domina el acoplamiento entre extremos y con el ancho domina el campo a tierra. Con varias separaciones se ve la transición y se puede comparar con las fórmulas cerradas y con el límite del extremo abierto.
+
+\item[¿Por qué no reportas el VSWR como en las otras?]
+Lo reporto, pero con una reflexión casi total deja de ser útil: tiende a infinito. Con $s=\SI{0.1}{mm}$ vale <<D3_VSWRG1_20>> a \SI{20}{GHz}; en los demás casos es mayor. Es más claro hablar de la fracción de potencia reflejada y transmitida.
+
+\item[¿Por qué Garg y Bahl dan una $C_g$ menor?]
+Son ajustes empíricos válidos para $W/h\leq 2$, y aquí $W/h=2.24$. Reproducen bien la tendencia de las dos capacitancias, pero dan $C_g$ entre <<D3_RGBMIN>> y <<D3_RGBMAX>> veces menor. HFSS además incluye todo el campo tridimensional del extremo.
+
+\item[¿Por qué la radiación casi no depende de la separación?]
+Porque radia sobre todo el extremo de la línea por la que llega la señal, y ese extremo está igual de cargado en todos los diseños: en todos la reflexión es casi total y el voltaje en el extremo es casi el doble del incidente.
+
+\item[¿Por qué la incertidumbre de la radiación es mayor que en las otras?]
+Con $|S_{11}|\approx 1$, un error pequeño en $|S_{11}|$ aparece casi al doble en $|S_{11}|^2$, que es lo que entra en el balance de potencia. Por eso la tomé como el doble del residuo de la corrección, $\pm$<<D3_PISO3>>\,\%.
+
+\item[Cinco simulaciones dicen que no convergieron, ¿son confiables?]
+Llegaron al máximo de 15 pases con un solo pase bajo el criterio de $\max|\Delta S|<0.005$ en lugar de dos; su último pase está a lo sumo en <<D3_DSMAX3>>. Además, el diseño con pérdidas y su gemelo sin pérdidas son simulaciones independientes y dan las mismas capacitancias dentro de la incertidumbre.
+
+\item[¿Para qué se usa un gap en la práctica?]
+Como acoplamiento capacitivo: bloqueo de DC, filtros de resonadores acoplados por los extremos y alimentación de resonadores. En todos esos usos se aprovecha justo lo que se ve aquí: que la transmisión la controla $C_g$ y que el extremo se ve como un circuito abierto alargado por $C_p$.
+\end{description}
+
+\section*{3.5 Errores que conviene evitar al explicarlo}
+\begin{itemize}
+\item \textbf{Decir que la transmisión ``aparece'' a cierta frecuencia.} Crece de forma continua con $\omega$; el umbral de $-10$~dB es solo una referencia.
+\item \textbf{Confundir $C_g$ con $C_p$.} $C_g$ es la que deja pasar señal; $C_p$ solo alarga el extremo y no transmite nada.
+\item \textbf{Atribuir la potencia perdida a disipación.} Es casi toda radiación del extremo abierto; la disipación no pasa de \SI{<<D3_PDISMAX3>>}{\percent}.
+\item \textbf{Decir que el gap es un buen capacitor de bloqueo.} A estas frecuencias su $C_g$ es demasiado pequeña.
+\end{itemize}
+
+\section*{3.6 Una analogía que ayuda}
+Piensa en una tubería con agua cortada por una membrana elástica. El agua no puede atravesarla, así que un flujo constante (DC) se detiene por completo. Pero si el agua va y viene, la membrana se estira de un lado a otro y empuja el agua del otro lado. Cuanto más rápido es el vaivén (mayor frecuencia) y más blanda la membrana (gap más angosto, $C_g$ mayor), más flujo pasa.
+
+\part*{Parte 4. Cambio de material}
+
+\section*{4.1 La idea en 30 segundos}
+\begin{idea}
+``Si la tira sigue igual pero pasa a otro sustrato, el campo magnético no se entera, porque el dieléctrico no es magnético: la inductancia por unidad de longitud es la misma. Lo que cambia es la carga: el RO3010 necesita <<D4_RCP13>> veces más carga para sostener el mismo voltaje. Más capacitancia con la misma inductancia es menos impedancia, \SI{<<D4_Z3_5>>}{\ohm} en lugar de 50, y la unión refleja $|\Gamma|\approx<<D4_GB2_5>>$ desde DC. Es la misma ley de la luz que llega a un vidrio, $(n_1-n_2)/(n_1+n_2)$, con $n=\sqrt{\varepsilon_{\mathrm{eff}}}$. Como la tira no cambia de forma, no hay parásitos: es un escalón casi ideal. Si el otro material ocupa un tramo, el efecto aparece cuando el tramo mide más de $\lambda_g/<<D4_LGF6>>$. Y si lo que cambia es el metal, de cobre a estaño, la unión no refleja nada medible: el estaño solo hace que la línea pierda más, un <<D4_DA5PCT>>\,\% más a \SI{5}{GHz}.''
+\end{idea}
+
+Si solo puedes decir una cosa, di esta: \textbf{cambiar el sustrato cambia solo la capacitancia por unidad de longitud, y con ella la impedancia; cambiar el metal casi no cambia la impedancia, solo las pérdidas.}
+
+\section*{4.2 Guion de exposición}
+
+\begin{paso}{Paso 1 --- El montaje (Figuras <<FIG:fig:d4geo>> y <<FIG:fig:d4hfss>>)}
+\textbf{Muestra:} el corte longitudinal y los modelos 3D.\\
+\textbf{Di:} ``La línea de \SI{50}{\ohm} sobre RO4003C sigue igual a partir de la mitad, pero sobre otro material. Probé los dos casos posibles: que cambie el sustrato, a FR-4 o a RO3010, y que cambie el metal de la tira, de cobre a estaño. Los dos planos de referencia quedan en la unión, así que lo que mido es solo la frontera. Como en las otras, corregí los puertos con líneas de referencia, aquí una por cada tipo de línea.''
+\end{paso}
+
+\begin{paso}{Paso 2 --- Las líneas (Tabla <<FIG:tab:d4lineas>>)}
+\textbf{Muestra:} las columnas de $L'$ y $C'$.\\
+\textbf{Di:} ``Antes de ver la unión conviene ver las líneas. Con la misma tira de \SI{1.14}{mm}, la inductancia por unidad de longitud es la misma sobre los tres sustratos, unos <<D4_LP1>>~nH/m, y la capacitancia pasa de <<D4_CP1>> a <<D4_CP3>>~pF/m sobre RO3010. Esa es la clave de todo: el sustrato solo cambia $C'$. La línea de estaño tiene las mismas $L'$ y $C'$ que la de cobre; solo atenúa más.''
+\end{paso}
+
+\begin{paso}{Paso 3 --- Lo que se observa (Figura <<FIG:fig:d4refl>> y Tabla <<FIG:tab:d4sparam>>)}
+\textbf{Muestra:} las curvas de $|S_{11}|$ junto al escalón ideal.\\
+\textbf{Di:} ``El paso a RO3010 refleja $|\Gamma|\approx<<D4_GB2_5>>$, VSWR <<D4_VB2_5>>, casi el 6\,\% de la potencia, igual desde \SI{0.1}{} hasta \SI{20}{GHz}. El paso a FR-4 refleja solo <<D4_GB1_5>>, \SI{-26}{dB}. Las dos curvas caen sobre el escalón ideal calculado con las impedancias de los puertos, y hasta \SI{10}{GHz} no se apartan de él más que la resolución. La pérdida de inserción es exactamente la de la reflexión, \SI{<<D4_ILB2_5>>}{dB}: la unión no radia ni disipa. El estaño no refleja nada que la simulación pueda resolver.''
+\end{paso}
+
+\begin{paso}{Paso 4 --- Por qué ocurre (Figura <<FIG:fig:d4campos>>)}
+\textbf{Muestra:} $|\mathbf{E}|$ y $|\mathbf{D}|$ en el corte vertical, y los perfiles de carga, voltaje y corriente.\\
+\textbf{Di:} ``Bajo la tira el campo eléctrico es tangente a la frontera entre sustratos, así que pasa igual: $|\mathbf{E}|$ no cambia. Pero $\mathbf{D}=\varepsilon\mathbf{E}$ salta un factor de <<D4_DSALTO>>, y como la carga de la tira es el $\mathbf{D}$ que termina en ella, la carga por unidad de longitud salta <<D4_QSALTO>> veces, mientras que el voltaje y la corriente siguen continuos. El RO3010 pide más carga por volt, es decir, menos impedancia. La onda llega con el cociente $V/I$ de \SI{50}{\ohm}, la línea siguiente exige \SI{<<D4_Z3_5>>}{\ohm}, y la diferencia regresa.''
+\end{paso}
+
+\begin{paso}{Paso 5 --- Por qué no hay parásitos}
+\textbf{Muestra:} la Figura <<FIG:fig:d4refl>>b.\\
+\textbf{Di:} ``En el cambio de ancho la tira cambiaba de forma y el campo tenía que reorganizarse; eso daba una capacitancia y una inductancia en la unión. Aquí la tira es la misma, y la forma del campo también: la fracción que va por el sustrato es <<D4_Q1>> de un lado y <<D4_Q3>> del otro. Los modos casi empalman, así que la unión es un escalón casi ideal. Arriba de \SI{10}{GHz} la dispersión mete más campo en el RO3010, las formas dejan de coincidir y la reflexión se aparta hasta <<D4_DEVB2_20>> del escalón ideal.''
+\end{paso}
+
+\begin{paso}{Paso 6 --- A partir de qué frecuencia (Figura <<FIG:fig:d4tramo>> y Tabla <<FIG:tab:d4tramo>>)}
+\textbf{Muestra:} la reflexión de un tramo de RO3010 de distintas longitudes.\\
+\textbf{Di:} ``Una sola unión es significativa desde DC, como el cambio de ancho. Pero en un interconector real el otro material ocupa un tramo y luego la línea vuelve a \SI{50}{\ohm}. Las dos uniones reflejan con signo opuesto: si el tramo es eléctricamente corto se cancelan y no pasa nada. El efecto aparece cuando el tramo mide $\lambda_g/<<D4_LGF6>>$, sea cual sea su longitud: desde \SI{<<D4_FS6>>}{GHz} para \SI{6}{mm} y desde \SI{<<D4_FS24>>}{GHz} para \SI{24}{mm}. Con un cuarto de onda la reflexión llega a <<D4_GPKT>>.''
+\end{paso}
+
+\begin{paso}{Paso 7 --- El metal (Figura <<FIG:fig:d4perd>> y Tabla <<FIG:tab:d4alfa>>)}
+\textbf{Muestra:} la atenuación de la línea de cobre y de la de estaño.\\
+\textbf{Di:} ``El metal no cambia ni la carga ni el campo fuera del conductor, solo la resistencia de la capa de la superficie por donde circula la corriente. El cambio de impedancia es del orden de una milésima, y la reflexión que predice la teoría, <<D4_GSN1>> a \SI{1}{GHz}, está por debajo de lo que la simulación resuelve. Lo que sí cambia es la pérdida: la atenuación por conductor sube un factor de <<D4_RAT5>>, y de ahí se ve que la tira produce el <<D4_FRTIRA>>\,\% de la pérdida de conductor. En \SI{10}{cm} de pista estañada son \SI{<<D4_EXT1>>}{dB} más a \SI{1}{GHz} y \SI{<<D4_EXT20>>}{dB} más a \SI{20}{GHz}.''
+\end{paso}
+
+\section*{4.3 Números que conviene saber de memoria}
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Dato & Valor \\
+\midrule
+Materiales & FR-4 ($\varepsilon_r=4.4$), RO3010 ($\varepsilon_r=10.2$), estaño ($\sigma=\SI{8.7}{MS/m}$) \\
+$L'$ (RO4003C / RO3010) & <<D4_LP1>> / <<D4_LP3>> nH/m \\
+$C'$ (RO4003C / FR-4 / RO3010) & <<D4_CP1>> / <<D4_CP2>> / <<D4_CP3>> pF/m \\
+$Z_0$ (RO4003C / FR-4 / RO3010) & <<D4_Z1_5>> / <<D4_Z2_5>> / <<D4_Z3_5>> \si{\ohm} \\
+$|\Gamma|$ a \SI{5}{GHz} (FR-4 / RO3010) & <<D4_GB1_5>> / <<D4_GB2_5>> (VSWR <<D4_VB1_5>> / <<D4_VB2_5>>) \\
+$\Gamma_0=(n_1-n_2)/(n_1+n_2)$ & <<D4_GN2_5>> / <<D4_GN3_5>> \\
+Pérdida de inserción, RO3010 & \SI{<<D4_ILB2_5>>}{dB}, toda por reflexión \\
+Desviación del escalón ideal & $\leq <<D4_DEVB2_10>>$ hasta \SI{10}{GHz}; $<<D4_DEVB2_20>>$ a \SI{20}{GHz} \\
+Tramo de RO3010: $-20$~dB desde & $\ell\approx\lambda_g/<<D4_LGF6>>$ (\SI{<<D4_FS6>>}{GHz} con \SI{6}{mm}) \\
+Compensado ($W=\SI{0.48}{mm}$) & $|\Gamma|=<<D4_GC_5>>$ a \SI{5}{GHz}, $\leq <<D4_GCMAX>>$ hasta \SI{20}{GHz} \\
+Estaño: $|S_{11}|$ & $\leq <<D4_GDMAX_HI>>$ (resolución <<D4_RESREF4>>) \\
+Estaño: atenuación & +<<D4_DA5PCT>>\,\% a \SI{5}{GHz}; $\alpha_{c,\mathrm{Sn}}/\alpha_{c,\mathrm{Cu}}=<<D4_RATMIN>>$--<<D4_RATMAX>> \\
+FR-4: atenuación & <<D4_RFR5>> veces la de RO4003C a \SI{5}{GHz} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{4.4 Preguntas probables y cómo responderlas}
+\begin{description}[style=nextline,leftmargin=0pt,itemsep=5pt]
+\item[¿Por qué hay una simulación con la tira más angosta si la discontinuidad es de material?]
+No es otro cambio de ancho: es la versión compensada del cambio a RO3010. Al angostar la tira la línea vuelve a ser de \SI{50}{\ohm}, y la reflexión baja <<D4_RED>> veces. Eso demuestra que lo que refleja es la diferencia de impedancias, no la frontera entre materiales en sí. La línea angosta sobre RO3010 también necesita su propia referencia para corregir el puerto.
+
+\item[¿Por qué tantas líneas de referencia?]
+Cada puerto se corrige con una línea recta del mismo tipo que la que lo toca. El puerto 1 siempre está sobre RO4003C con cobre; el puerto 2 puede estar sobre FR-4, RO3010, RO3010 angosta o estaño. Además, sus constantes de propagación me sirvieron para separar las pérdidas.
+
+\item[¿Por qué el cambio de metal no tiene gemelo sin pérdidas?]
+Porque sin pérdidas los dos metales son el mismo conductor perfecto, y la estructura sería una línea recta.
+
+\item[¿Por qué la inductancia no cambia con el sustrato?]
+Porque los dieléctricos tienen $\mu=\mu_0$: el campo magnético depende solo de la corriente y de la geometría, y ambas son iguales a los dos lados. La tabla de líneas lo confirma: <<D4_LP1>> y <<D4_LP3>>~nH/m.
+
+\item[¿El cambio a FR-4 no importa entonces?]
+La unión casi no refleja, pero la línea sobre FR-4 atenúa <<D4_RFR5>> veces más por su $\tan\delta$ de 0.02. En la práctica lo que pesa es la pérdida del tramo de FR-4, no la frontera.
+
+\item[¿Por qué no se ve la reflexión del estaño?]
+La teoría da $|\Gamma|=\Delta\alpha_c/(\sqrt{2}\beta)$: <<D4_GSN1>> a \SI{1}{GHz} y <<D4_GSN20>> a \SI{20}{GHz}, entre <<D4_DBRES1>> y <<D4_DBRES20>>~dB por debajo de la resolución de la corrección, <<D4_RESREF4>>. Lo que sí se mide con claridad es el aumento de la atenuación.
+
+\item[¿Un acabado de estaño real se comporta así?]
+Solo si su espesor es mayor que unas cuantas profundidades de penetración (\SI{<<D4_DSN1>>}{\micro\metre} a \SI{1}{GHz}). Un acabado de pocos micrómetros deja pasar parte de la corriente por el cobre de abajo, y su pérdida queda entre la del cobre y la calculada aquí.
+\end{description}
+
+\section*{4.5 Errores que conviene evitar al explicarlo}
+\begin{itemize}
+\item \textbf{Decir que el campo eléctrico salta en la frontera.} El que salta es $\mathbf{D}$; $\mathbf{E}$ bajo la tira es tangente a la frontera y es continuo.
+\item \textbf{Decir que la reflexión del sustrato crece con la frecuencia.} La de una sola unión es constante; lo que depende de la frecuencia es la longitud eléctrica de un tramo.
+\item \textbf{Atribuir el efecto del estaño a la unión.} La unión es transparente; el efecto es una pérdida distribuida a lo largo de la línea.
+\item \textbf{Presentar la variante compensada como otra discontinuidad de ancho.} Es la corrección del cambio de material, y sirve para separar las causas.
+\end{itemize}
+
+\section*{4.6 Una analogía que ayuda}
+Es la luz que pasa del aire al vidrio. Parte se refleja en la superficie aunque el vidrio sea perfectamente transparente, porque la luz viaja más lento en él; la fracción reflejada depende solo de cuánto cambia el índice, $(n_1-n_2)/(n_1+n_2)$, y no del color. Un vidrio delgado (un tramo corto) casi no refleja, y una película de un cuarto de onda refleja lo máximo, que es el principio de los espejos dieléctricos. El estaño, en cambio, es como un vidrio un poco ahumado: no refleja más que el limpio, pero absorbe más luz cuanto más grueso es.
+
+\newpage
+\part*{Parte 5. Unión en T}
+
+\section*{5.1 La idea en 30 segundos}
+\begin{idea}
+``En una T las tres líneas comparten el voltaje y la corriente se reparte. Si las tres son de \SI{50}{\ohm}, la onda que llega por una ve las otras dos en paralelo, \SI{25}{\ohm}, y refleja un tercio desde DC: el 11\,\% de la potencia, VSWR de 2. Eso no lo causa ningún parásito, es la división de impedancias. Los parásitos aparecen con la frecuencia: el cuadro donde se cruzan las líneas guarda carga, como una capacitancia de unos \SI{<<D5_CE_B_T>>}{fF}, y la corriente que entra a la rama tiene que doblar \ang{90}, lo que le agrega inductancia. Por eso a alta frecuencia más potencia sigue de frente: a \SI{20}{GHz}, <<D5_PT21_20>>\,\% contra <<D5_PT31_20>>\,\%. Con salidas de \SI{100}{\ohm} la entrada queda acoplada, y si la rama queda abierta se vuelve un stub que corta la transmisión cuando mide un cuarto de onda.''
+\end{idea}
+
+Si solo puedes decir una cosa, di esta: \textbf{la T refleja un tercio desde DC por la división de impedancias; la frecuencia solo cambia cómo se reparte la potencia, y una rama abierta corta la transmisión en $\lambda_g/4$.}
+
+\section*{5.2 Guion de exposición}
+
+\begin{paso}{Paso 1 --- El montaje (Figuras <<FIG:fig:d5geo>> y <<FIG:fig:d5hfss>>)}
+\textbf{Muestra:} las tres estructuras.\\
+\textbf{Di:} ``Simulé tres versiones de la misma unión. La T de \SI{50}{\ohm}, con un puerto en cada brazo: es una derivación en un interconector. El divisor, donde la señal entra por la rama de \SI{50}{\ohm} y sale por dos líneas de \SI{100}{\ohm}. Y la T con la rama abierta de \SI{8}{mm}, un stub. Los planos de referencia quedan en los bordes del cuadro de unión, y como ahora hay tres puertos, generalicé la corrección de puertos a una caja de error por puerto.''
+\end{paso}
+
+\begin{paso}{Paso 2 --- La T a baja frecuencia (Tabla <<FIG:tab:d5sparam>>)}
+\textbf{Muestra:} la primera fila de la tabla.\\
+\textbf{Di:} ``A \SI{0.1}{GHz}, $S_{11}=<<D5_B11_01>>$ y $S_{21}=S_{31}=<<D5_B21_01>>$: exactamente $1/3$ y $2/3$, lo que da la unión ideal. Cada brazo ve los otros dos en paralelo, \SI{25}{\ohm} en vez de 50. Es el mismo mecanismo del cambio de ancho y del cambio de sustrato: una diferencia de impedancias, presente desde DC.''
+\end{paso}
+
+\begin{paso}{Paso 3 --- Lo que cambia con la frecuencia (Figura <<FIG:fig:d5t>>)}
+\textbf{Muestra:} el reparto de potencia desde P1.\\
+\textbf{Di:} ``Al subir la frecuencia el reparto se desequilibra: más potencia sigue de frente y menos entra a la rama. El desbalance pasa de \SI{0.5}{dB} desde \SI{<<D5_FDESB05>>}{GHz} y llega a \SI{<<D5_DESB20>>}{dB} a \SI{20}{GHz}. Desde la rama, la reflexión sube de 0.34 a <<D5_B33_20>>. El modelo de Hammerstad acierta las fases, con menos de \ang{<<D5_HFASEMAX>>} de diferencia, pero subestima ese desbalance.''
+\end{paso}
+
+\begin{paso}{Paso 4 --- Por qué (Figura <<FIG:fig:d5campos>>)}
+\textbf{Muestra:} las líneas de corriente en la T.\\
+\textbf{Di:} ``La corriente que llega se parte a la mitad: la de arriba dobla hacia la rama y se concentra en las esquinas interiores, como en la curva; la de abajo sigue de frente. El camino a la rama tiene más inductancia, y como su reactancia crece con $\omega$, a alta frecuencia la rama acepta menos corriente. Además el cuadro de unión guarda carga, <<D5_CCUADRO>> veces la densidad de la línea, y se comporta como una capacitancia de \SI{<<D5_CE_B_T>>}{fF} en el nodo.''
+\end{paso}
+
+\begin{paso}{Paso 5 --- El divisor (Figura <<FIG:fig:d5div>> y Tabla <<FIG:tab:d5div>>)}
+\textbf{Muestra:} $|S_{33}|$ del divisor.\\
+\textbf{Di:} ``Si las salidas son de \SI{100}{\ohm}, en paralelo dan \SI{50}{\ohm} y la entrada queda acoplada: la reflexión baja a <<D5_D33_1>> a \SI{1}{GHz}. Lo que queda es solo la unión, una capacitancia de \SI{<<D5_CE_C_Divisor>>}{fF} que hace crecer la reflexión con la frecuencia; pasa de $-20$~dB a partir de \SI{<<D5_FD20>>}{GHz}. A cambio, las salidas no quedan acopladas ni aisladas: cada una refleja $1/2$, como dice la teoría de redes de tres puertos.''
+\end{paso}
+
+\begin{paso}{Paso 6 --- El stub (Figura <<FIG:fig:d5stub>>)}
+\textbf{Muestra:} la transmisión con la rama abierta y la predicción.\\
+\textbf{Di:} ``Con la rama abierta la transmisión cae a \SI{<<D5_DN1>>}{dB} a \SI{<<D5_FN1>>}{GHz} y otra vez a \SI{<<D5_FN2>>}{GHz}. Ahí el stub mide un cuarto y tres cuartos de onda: la onda vuelve del extremo abierto invertida y pone un corto en la línea. Lo interesante es que lo pude predecir sin simularlo: con la T de tres puertos, \SI{8}{mm} de línea y el extremo abierto que medí en el gap, la predicción cae a \SI{<<D5_EFP1>>}{\percent} de HFSS.''
+\end{paso}
+
+\begin{paso}{Paso 7 --- Cómo se cancela la onda en el stub (Figuras <<FIG:fig:d5stubmapas>> y <<FIG:fig:d5stubonda>>)}
+\textbf{Muestra:} primero los mapas a \SI{5.5}{GHz} y \SI{10.8}{GHz}; luego el voltaje a lo largo del stub y los fasores.\\
+\textbf{Di:} ``A \SI{5.5}{GHz} toda la corriente que llega dobla hacia el stub y a la salida pasa el <<D5S_IOUTA>>\,\%. En el voltaje se ve por qué: el extremo abierto llega a <<D5S_VENDA>> veces el voltaje incidente y la unión queda en un nodo, con apenas <<D5S_V0A>> veces. Si separo el voltaje en la onda que va al extremo y la que regresa, las dos miden lo mismo, <<D5S_AA>> y <<D5S_BA>>, y llegan a la unión desfasadas \ang{<<D5S_ANGA>>}: se cancelan, y un voltaje cero en ese punto es un corto en paralelo con la línea. A \SI{10.8}{GHz} las mismas dos ondas llegan en fase y se suman; la base del stub casi no lleva corriente y la línea transmite como si el stub no estuviera.''\\
+\textbf{Si te preguntan de dónde salen el voltaje y la corriente:} el voltaje es la integral de $E_z$ entre la tierra y la tira en un corte vertical, y la corriente sale de la derivada del voltaje con la ecuación del telegrafista; integrar $\mathbf{J}_s$ directamente da menos por la singularidad en los bordes.
+\end{paso}
+
+\begin{paso}{Paso 8 --- A partir de qué frecuencia}
+\textbf{Di:} ``La T es significativa desde DC por su tercio de reflexión. Lo que depende de la frecuencia es el reparto, que se desequilibra más de \SI{0.5}{dB} desde \SI{<<D5_FDESB05>>}{GHz}. En el divisor el efecto de la unión es significativo desde \SI{<<D5_FD20>>}{GHz}. Y el stub, desde \SI{<<D5_FS20>>}{GHz}, con su corte en la frecuencia en que mide $\lambda_g/4$.''
+\end{paso}
+
+\section*{5.3 Números que conviene saber de memoria}
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Dato & Valor \\
+\midrule
+T ideal & $S_{11}=-1/3$, $S_{21}=S_{31}=2/3$; 11\,\% reflejado y 44.4\,\% a cada brazo \\
+T de HFSS a \SI{0.1}{GHz} & $|S_{11}|=<<D5_B11_01>>$, $|S_{21}|=<<D5_B21_01>>$, $|S_{31}|=<<D5_B31_01>>$ \\
+T a \SI{20}{GHz} & $|S_{11}|=<<D5_B11_20>>$, $|S_{21}|=<<D5_B21_20>>$, $|S_{31}|=<<D5_B31_20>>$, $|S_{33}|=<<D5_B33_20>>$ \\
+Desbalance & $>\SI{0.5}{dB}$ desde \SI{<<D5_FDESB05>>}{GHz}; \SI{<<D5_DESB20>>}{dB} a \SI{20}{GHz} (Hammerstad: \SI{<<D5_HDESB20>>}{dB}) \\
+Capacitancia en exceso & T: \SI{<<D5_CE_B_T>>}{fF} ($C'W=\SI{<<D5_CW>>}{fF}$); divisor: \SI{<<D5_CE_C_Divisor>>}{fF} \\
+Divisor & $|S_{33}|=<<D5_D33_1>>$ a \SI{1}{GHz}, <<D5_D33_20>> a \SI{20}{GHz}; $-20$~dB desde \SI{<<D5_FD20>>}{GHz} \\
+Stub de \SI{8}{mm} & cortes en \SI{<<D5_FN1>>}{} y \SI{<<D5_FN2>>}{GHz}; predicción: \SI{<<D5_FP1>>}{} y \SI{<<D5_FP2>>}{GHz} \\
+Radiación a \SI{20}{GHz} & T: \SI{<<D5_PRADB1_20>>}{}--\SI{<<D5_PRADB3_20>>}{\percent}; stub: hasta \SI{<<D5_PRADD_MAX>>}{\percent} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{5.4 Preguntas probables y cómo responderlas}
+\begin{description}[style=nextline,leftmargin=0pt,itemsep=5pt]
+\item[¿Por qué no se puede acoplar la T en los tres puertos?]
+Porque una red de tres puertos sin pérdidas y recíproca no puede estar acoplada en todos a la vez. Se puede acoplar la entrada, como en el divisor, pero entonces las salidas reflejan y quedan acopladas entre sí. Para acoplar todo hace falta disipar, como en el divisor de Wilkinson, que agrega una resistencia entre las salidas.
+
+\item[¿Por qué se va más potencia de frente a alta frecuencia?]
+Porque para entrar a la rama la corriente tiene que doblar \ang{90}, y ese camino tiene más inductancia que el recto. La reactancia crece con $\omega$, así que a alta frecuencia la rama ofrece más oposición y la corriente prefiere seguir de frente.
+
+\item[¿Por qué el modelo de Hammerstad no coincide del todo?]
+Es un ajuste empírico de 1981 hecho para ciertos rangos de impedancias y anchos. Ubica bien los planos efectivos de la unión, por eso acierta las fases, pero le asigna menos energía almacenada que HFSS: cerca de la mitad de la capacitancia en exceso en ambos casos. En el divisor, con una rama ancha sobre una línea angosta, probablemente está fuera de su rango.
+
+\item[¿Para qué simulaste la T con la rama abierta?]
+Porque es el caso más peligroso en un interconector: una derivación que no lleva a ningún lado, como una pista que se dejó sin terminar o el sobrante de una vía. Corta la transmisión en las frecuencias en que mide un número impar de cuartos de onda, y unos cuantos milímetros bastan para que eso ocurra en la banda de los gigahertz.
+
+\item[¿Cómo se corrigieron tres puertos?]
+Con una caja de error por puerto, sacada de la línea de referencia correspondiente. La fórmula generaliza la de dos puertos, y con dos puertos da lo mismo hasta $10^{-14}$.
+\end{description}
+
+\section*{5.5 Errores que conviene evitar al explicarlo}
+\begin{itemize}
+\item \textbf{Atribuir el tercio de reflexión a los parásitos.} Es la división de impedancias; los parásitos solo la modifican a alta frecuencia.
+\item \textbf{Decir que el divisor está acoplado en todos sus puertos.} Solo la entrada; cada salida refleja $1/2$.
+\item \textbf{Confundir el corte del stub con radiación.} En la primera resonancia casi toda la potencia se refleja; la radiación es de \SI{<<D5_PRADD_N1>>}{\percent}.
+\end{itemize}
+
+\section*{5.6 Una analogía que ayuda}
+Una tubería que se divide en dos iguales: el agua que llega encuentra el doble de sección de salida y parte del empuje rebota, por eso la T refleja aunque no tenga ningún obstáculo. Si el agua va muy rápido, le cuesta más doblar hacia la derivación y sigue de frente. Y una derivación cerrada en el extremo, del largo justo, devuelve una onda de presión que llega a la unión a destiempo y frena por completo el paso del agua: ese es el stub.
+
+\newpage
+\part*{Parte 6. Cómo contar las cinco juntas}
+\begin{idea}
+``Las cinco reflejan por razones distintas, y por eso dependen de la frecuencia de forma distinta. Hay dos familias. En el cambio de ancho, el cambio de sustrato y la T, la reflexión principal es una diferencia de impedancias: existe desde DC y la frecuencia solo importa a través de los parásitos o de la longitud de un tramo. En la curva y en el divisor ya acoplado, la reflexión es solo parásita: la reactancia crece con $\omega$ y aparece a partir de cierta frecuencia, unos \SI{<<F20>>}{GHz} en la curva y \SI{<<D5_FD20>>}{GHz} en el divisor. El gap y el stub son casos extremos: el corte deja pasar solo por acoplamiento capacitivo, y la rama abierta corta la transmisión en sus cuartos de onda. El cambio de metal casi no refleja; solo agrega pérdidas. Cada corrección ataca la causa: el chaflán quita la carga sobrante de la esquina; la transición reparte el cambio de impedancia y solo funciona si es larga frente a $\lambda_g$; en el gap, acercar los extremos aumenta $C_g$; en el cambio de sustrato, ajustar el ancho devuelve los \SI{50}{\ohm}; y en la T, elegir las impedancias de las salidas acopla la entrada. La radiación tiene dos orígenes: el giro de la corriente, en la curva y en la T, y los extremos abiertos, en el gap y el stub; el cambio de ancho y el cambio de material casi no radian.''
+\end{idea}
+La Tabla <<FIG:tab:comparacion>> del reporte resume esta comparación.
+
+\end{document}

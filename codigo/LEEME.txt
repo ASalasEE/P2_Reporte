@@ -1,0 +1,100 @@
+Codigo del Proyecto 2 - Discontinuidades en interconectores de microcinta
+=======================================================================
+Discontinuidad 1: curva de 90 grados.  Discontinuidad 2: cambio abrupto de ancho.
+Discontinuidad 3: gap en serie.  Discontinuidad 4: cambio de material.
+Discontinuidad 5: union en T.
+
+1. Simulacion (Ansys Electronics Desktop, Automation -> Run Script)
+   P2_D1_Curva90_v2.py          curva: construye, resuelve y exporta las 6 estructuras
+   P2_Diagnostico_Referencia.py curva: variantes de la linea de referencia (Tabla 2)
+   P2_D1_Exportar_Campos.py     curva: exporta E y H junto a la traza (carga y corriente)
+   P2_D2_Escalon.py             cambio de ancho: construye las 8 estructuras, las
+                                resuelve, exporta CSV y campos y deja un .zip
+   P2_D2_Complemento.py         el mismo script en modo "complemento" (abre el
+                                proyecto ya resuelto y solo agrega lo que falte)
+   P2_D3_Gap.py                 gap: construye los 12 disenos, los resuelve (y los
+                                vuelve a resolver con menos pases si exceden el
+                                limite de malla), exporta CSV y campos y deja un .zip
+   P2_D4_Material.py            cambio de material: construye los 16 disenos (cambio de
+                                sustrato a FR-4 y RO3010, sustrato con ancho compensado,
+                                cobre -> estano y sus referencias), los resuelve,
+                                exporta CSV y campos y deja un .zip
+   P2_D4_Reanudar.py            el mismo script en modo "reanudar": abre la version mas
+                                reciente del proyecto y resuelve solo los disenos que
+                                aun no tienen resultados (por si AEDT se cierra)
+   P2_D5_T.py                   union en T: construye los 10 disenos (T de 50 ohm de
+                                3 puertos, divisor con salidas de 100 ohm, stub abierto
+                                de 8 mm y referencias de 50 y 100 ohm), los resuelve,
+                                exporta CSV y campos (con la excitacion indicada) y
+                                deja un .zip
+   P2_D5_Reanudar.py            el mismo script en modo "reanudar"
+   P2_D5_Campos_Stub.py         abre P2_D5_T ya resuelto, agrega al stub puntos a
+                                5.5, 10.8 y 16.15 GHz con campos guardados, los
+                                resuelve con la malla ya refinada y exporta E y H
+                                sobre el stub y dos cortes verticales; deja
+                                P2_D5_Stub_Campos.zip
+
+2. Datos: las carpetas exportadas por HFSS van dentro de datos/.
+   Ya vienen incluidas las de CSV. Las de campos no se incluyen por su tamano:
+     datos/P2_D1_Campos                 (la genera P2_D1_Exportar_Campos.py)
+     datos/P2_D2_Escalon_CSV/campos     (la genera P2_D2_Escalon.py)
+     datos/P2_D3_Gap_CSV/campos         (la genera P2_D3_Gap.py)
+     datos/P2_D4_Material_CSV/campos    (la genera P2_D4_Material.py; el .zip
+                                         se llama P2_D4_Material_vN_CSV.zip y su
+                                         carpeta se renombra a P2_D4_Material_CSV)
+     datos/P2_D5_T_CSV/campos           (la genera P2_D5_T.py)
+     datos/P2_D5_Stub_Campos            (la genera P2_D5_Campos_Stub.py)
+
+3. Posprocesamiento (Python 3 con numpy, scipy y matplotlib), en este orden:
+   python leer_convergencia.py   -> conv_v2.json (convergencia de la curva)
+   python plots_v2.py            -> figuras de resultados de la curva
+   python fig_geo.py             -> geometria de la curva
+   python fig_campos.py          -> carga y corriente en la curva (campos de HFSS)
+   python fig_escala2.py         -> esquina frente a la longitud de onda
+   python fig_imagen.py          -> tira e imagen (radiacion)
+   python d2_analisis.py         -> d2_nums.json y d2_datos.npz (cambio de ancho:
+                                    correccion de puertos, potencia, circuito)
+   python fig_d2_geo.py          -> geometria del cambio de ancho
+   python fig_d2_plots.py        -> figuras de resultados del cambio de ancho
+   python fig_d2_campos.py       -> carga y corriente en el cambio de ancho
+   python fig_d2_escala.py       -> transicion frente a la longitud de onda
+   python d3_analisis.py         -> d3_nums.json y d3_datos.npz (gap: correccion,
+                                    circuito pi, potencia)
+   python fig_d3_plots.py        -> geometria y figuras de resultados del gap
+   python fig_d3_campos.py       -> carga y lineas de campo del gap
+   python d4_analisis.py         -> d4_nums.json y d4_datos.npz (cambio de material:
+                                    correccion, escalon ideal, perdidas, tramo finito)
+   python fig_d4_plots.py        -> geometria, reflexion, tramo finito y perdidas
+   python fig_d4_campos.py       -> E, D, carga, voltaje y corriente en la union
+   python d5_analisis.py         -> d5_nums.json y d5_datos.npz (union en T: correccion
+                                    de 3 puertos, T ideal, Hammerstad, divisor, stub;
+                                    requiere d3_datos.npz)
+   python fig_d5_plots.py        -> geometria, T, divisor y stub
+   python fig_d5_campos.py       -> carga y corriente en la T y en el divisor
+   python fig_d5_stub_campos.py  -> carga, corriente y onda estacionaria en el stub
+                                    (d5_stub.json; requiere d5_nums.json)
+   python gen_reporte.py         -> reporte/ (llena las plantillas .tex con los
+                                    valores calculados y compila con pdflatex)
+
+Archivos de apoyo:
+   load_v2.py, extract_v2.py   lectura de CSV y circuito en T de la curva
+   load_diag.py                datos del diagnostico de la referencia
+   campos_hfss.py              lectura de los .fld y rho_s, J_s en la curva
+   load_d2.py                  lectura de los CSV del cambio de ancho
+   correccion.py               correccion del error de puerto con las referencias
+                               (modelo g, cajas de error, matrices de transferencia)
+   circuito.py                 circuito del escalon, ajuste por minimos cuadrados
+                               y formulas de Gupta et al.
+   campos_d2.py                rho_s, J_s, q(x) y metricas del cambio de ancho
+   campos_d3.py                carga del gap y trazado de lineas de campo en el
+                               corte vertical
+   campos_d4.py                carga, corriente y voltaje a lo largo de la linea y
+                               E, D en el corte vertical del cambio de sustrato
+   load_d5.py                  lectura de los CSV de N puertos (union en T)
+   hammerstad.py               modelo de la union en T de Hammerstad (como en Qucs)
+   campos_d5.py                carga y corriente en la union en T
+   campos_stub.py              carga, corriente y voltaje en el stub y separacion
+                               de la onda que va al extremo y la que regresa
+   correccion.py               incluye corregir_n, la correccion de N puertos
+   reporte_tpl.tex, guia_tpl.tex  plantillas del reporte y de la guia
+La fuente Latin Modern es opcional; si no esta instalada se usa la predeterminada.
