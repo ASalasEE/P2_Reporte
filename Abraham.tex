@@ -1,11 +1,51 @@
-\section*{Instrucciones para Colaboradores}
+\begin{abstract}
+Se analizó mediante simulación electromagnética de onda completa (Ansys HFSS) el efecto de cuatro discontinuidades geométricas y una de material sobre líneas de microcinta en sustrato Rogers RO4003C, entre \SI{0.1}{} y \SI{20}{GHz}. La \textbf{curva de \ang{90}} sin compensar refleja más del 1\,\% de la potencia ($|S_{11}|>-20$~dB) a partir de \SI{7.00}{GHz} y alcanza un VSWR de 2.01 a \SI{20}{GHz}. Un circuito equivalente extraído de HFSS muestra que la esquina conserva la capacitancia de un tramo recto de igual área, pero su inductancia serie es menos de la mitad, de modo que se comporta como un tramo corto de $Z_{eq}\approx\SI{32}{\ohm}$. El chaflán óptimo elimina la reflexión, pero no la radiación (\SI{5.2}{\percent} sin chaflán y \SI{4.1}{\percent} con chaflán a \SI{20}{GHz}), que se debe al cambio de dirección de la corriente. El \textbf{cambio abrupto de ancho} entre una línea de \SI{50}{\ohm} y una de \SI{100}{\ohm} se comporta de forma opuesta: su reflexión, $|\Gamma|\approx0.330$ (VSWR $\approx1.99$), está presente desde las frecuencias más bajas porque la fija el cociente de impedancias características, y cambia poco hasta \SI{20}{GHz}. Los elementos parásitos del escalón ($C\approx\SI{8.0}{fF}$ y $L\approx\SI{18}{pH}$) solo giran la fase de la reflexión unos \ang{6} a \SI{20}{GHz}. Una transición gradual de \SI{10}{mm} lleva la reflexión por debajo de $-20$~dB a partir de \SI{7.00}{GHz}, cuando su longitud supera $0.38\,\lambda_g$, pero no puede evitarla a frecuencias bajas. Ninguna de las dos variantes del cambio de ancho radia más de \SI{0.4}{\percent}, porque la corriente no cambia de dirección. El \textbf{gap en serie} interrumpe el camino de conducción: refleja casi toda la potencia desde DC, y la única transmisión es la corriente de desplazamiento a través de la capacitancia entre los extremos, que crece unos 20~dB por década. Con una separación de \SI{0.1}{mm} ($C_g\approx\SI{33}{fF}$) la transmisión pasa de \SI{-33.3}{dB} a \SI{1}{GHz} a \SI{-7.8}{dB} a \SI{20}{GHz}; al abrir el gap, $C_g$ cae a menos de \SI{1}{fF} y la capacitancia de cada extremo a tierra tiende a la de un extremo abierto. Los extremos abiertos radian del orden de 3 a 5\,\% de la potencia a \SI{20}{GHz}. En el \textbf{cambio de material} la tira continúa igual, pero sobre otro sustrato o con otro metal. Cambiar el sustrato deja intacta la inductancia por unidad de longitud y solo cambia la capacitancia, de modo que la unión es un escalón de impedancia casi ideal, $\Gamma_0=(n_1-n_2)/(n_1+n_2)$ con $n=\sqrt{\varepsilon_{\mathrm{eff}}}$: pasar a FR-4 refleja $|\Gamma|\approx0.050$ ($-26$~dB) y pasar a RO3010 ($\varepsilon_r=10.2$) refleja $|\Gamma|\approx0.243$ (VSWR $\approx1.64$) desde DC, sin radiación ni parásitos apreciables por debajo de \SI{10}{GHz}. Si el segundo material ocupa un tramo de longitud $\ell$, el efecto se vuelve significativo cuando $\ell$ supera $\lambda_g/32$. Cambiar el cobre por estaño no produce una reflexión medible ($|S_{11}|<0.006$); su efecto es distribuido: la atenuación de la línea sube 58\,\% a \SI{5}{GHz}. La \textbf{unión en T} de tres líneas de \SI{50}{\ohm} refleja un tercio de la onda desde DC, porque cada brazo ve los otros dos en paralelo; a alta frecuencia la capacitancia del cuadro de unión ($\approx\SI{75}{fF}$) y la inductancia del giro hacia la rama desequilibran el reparto, que a \SI{20}{GHz} envía el 54\,\% de la potencia de frente y el 38\,\% a la rama. Un divisor con salidas de \SI{100}{\ohm} elimina la reflexión de entrada hasta \SI{13.0}{GHz}, y una rama abierta de \SI{8}{mm} corta la transmisión a \SI{5.50}{GHz}, donde mide un cuarto de onda; esa frecuencia se predice con un error de \SI{1.8}{\percent} combinando la T, la línea y el extremo abierto de la discontinuidad 3.
+\end{abstract}
 
-\begin{quote}
-\textbf{Nota para el equipo:} Este proyecto está estructurado con \texttt{main.tex} como archivo principal. 
-Cada integrante debe crear o editar su propio archivo individual (por ejemplo, \texttt{seccion\_nombre.tex}) dentro del proyecto e incluirlo en el archivo principal mediante el comando \texttt{\textbackslash input\{seccion\_nombre\}} o \texttt{\textbackslash include\{seccion\_nombre\}}.
+\section{Objetivo}
+Analizar mediante simulación el efecto que producen las discontinuidades geométricas y de material sobre la propagación de señales en una línea de microcinta, relacionando los resultados con la desadaptación de impedancias, la reflexión, la pérdida de inserción y los efectos capacitivos e inductivos parásitos. En este documento se estudian cinco: cuatro geométricas (una curva de \ang{90}, un cambio abrupto de ancho, un gap en serie y una unión en T) y un cambio de material a mitad de la línea.
 
-Por favor, asegúrense de no modificar el preámbulo ni la configuración global en \texttt{main.tex} sin antes consultarlo con el equipo, y realicen sus cambios en sus respectivas secciones respetando el formato acordado.
-\end{quote}
+\section{Pregunta de investigación}
+¿Cómo afectan las discontinuidades geométricas y de material la reflexión y la transmisión de señales en interconectores de microcinta conforme aumenta la frecuencia? ¿A partir de qué región de frecuencia su efecto es significativo y cuál es la explicación electromagnética? Las Secciones~\ref{sec:d1} a~\ref{sec:d5} responden esta pregunta para cada discontinuidad, y la Sección~\ref{sec:comparacion} compara las respuestas.
 
-\hrule
-\vspace{0.5cm}
+\section{Marco teórico}
+
+\subsection{La línea de microcinta}
+La microcinta es una tira conductora de ancho $W$ sobre un sustrato dieléctrico de espesor $h$ y permitividad relativa $\varepsilon_r$, con un plano de tierra en la cara opuesta. Como parte del campo viaja en el aire y parte en el dieléctrico, el modo fundamental no es TEM puro sino cuasi-TEM, y se describe con una permitividad efectiva $\varepsilon_{\mathrm{eff}}$ comprendida entre 1 y $\varepsilon_r$ \cite{pozar}:
+\begin{equation}
+\varepsilon_{\mathrm{eff}} = \frac{\varepsilon_r+1}{2} + \frac{\varepsilon_r-1}{2}\,\frac{1}{\sqrt{1+12\,\frac{h}{W}}}.
+\label{eq:eeff}
+\end{equation}
+La impedancia característica es
+\begin{equation}
+Z_0 =
+\begin{cases}
+\dfrac{60}{\sqrt{\varepsilon_{\mathrm{eff}}}}\ln\!\left(\dfrac{8h}{W}+\dfrac{W}{4h}\right), & W/h\leq 1,\\[12pt]
+\dfrac{120\pi}{\sqrt{\varepsilon_{\mathrm{eff}}}\left[\frac{W}{h}+1.393+0.667\ln\!\left(\frac{W}{h}+1.444\right)\right]}, & W/h\geq 1,
+\end{cases}
+\label{eq:z0}
+\end{equation}
+y la longitud de onda guiada es
+\begin{equation}
+\lambda_g = \frac{\lambda_0}{\sqrt{\varepsilon_{\mathrm{eff}}}} = \frac{c}{f\sqrt{\varepsilon_{\mathrm{eff}}}}.
+\label{eq:lg}
+\end{equation}
+En términos de un circuito distribuido, $Z_0=\sqrt{L'/C'}$ y la velocidad de fase es $1/\sqrt{L'C'}$, de modo que la inductancia y la capacitancia por unidad de longitud son $L'=Z_0\sqrt{\varepsilon_{\mathrm{eff}}}/c$ y $C'=\sqrt{\varepsilon_{\mathrm{eff}}}/(cZ_0)$. Una tira más angosta tiene menos capacitancia y más inductancia por unidad de longitud, y por lo tanto mayor impedancia.
+
+\subsection{Parámetros de dispersión y figuras de mérito}
+\label{sec:sparam}
+Cada puerto se refiere a la impedancia de la línea conectada a él. Cuando ambas líneas son de \SI{50}{\ohm}, el coeficiente de reflexión a la entrada es simplemente $\Gamma=S_{11}$; cuando las líneas son distintas, $S_{11}$ es la reflexión que ve una onda que llega por la línea~1 si la línea~2 continúa indefinidamente, es decir, terminada en su propia impedancia. De $\Gamma$ se obtienen la razón de onda estacionaria y las pérdidas de retorno y de inserción:
+\begin{equation}
+\mathrm{VSWR} = \frac{1+|\Gamma|}{1-|\Gamma|}, \qquad
+\mathrm{RL} = -20\log_{10}|S_{11}|, \qquad
+\mathrm{IL} = -20\log_{10}|S_{21}|.
+\label{eq:merito}
+\end{equation}
+La conservación de la energía en la red de dos puertos permite separar la potencia incidente en lo que se refleja, lo que se transmite y lo que se pierde dentro de la estructura (radiación más disipación en conductores y dieléctrico):
+\begin{equation}
+|S_{11}|^2 + |S_{21}|^2 + P_{\mathrm{rad}} + P_{\mathrm{dis}} = 1
+\quad\Longrightarrow\quad
+P \equiv 1-|S_{11}|^2-|S_{21}|^2 = P_{\mathrm{rad}} + P_{\mathrm{dis}}.
+\label{eq:balance}
+\end{equation}
+La pérdida de inserción tiene así dos orígenes distintos: la potencia que se refleja (desadaptación) y la que se pierde ($P$). La parte debida solo a la reflexión es $\mathrm{IL}_{\mathrm{refl}}=-10\log_{10}\left(1-|S_{11}|^2\right)$.

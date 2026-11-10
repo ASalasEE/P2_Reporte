@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.5)  9 NOV 2026 16:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.5)  9 NOV 2026 19:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -847,41 +847,60 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 LaTeX Warning: No \author given.
 
-(Abraham.tex
-LaTeX Font Info:    Trying to load font information for OMS+cmtt on input line 5.
-LaTeX Font Info:    No file OMScmtt.fd. on input line 5.
+(Abraham.tex [1
+
+{C:/Users/BMO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+
+LaTeX Warning: Reference `sec:d1' on page 2 undefined on input line 9.
 
 
-LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
-(Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbackslash' on input line 5.
+LaTeX Warning: Reference `sec:d5' on page 2 undefined on input line 9.
 
-) (Abdiel.tex) (America.tex) (Julio.tex) (Griego.tex) (Orlando.tex) (Angel.tex) [1
 
-{C:/Users/BMO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (main.aux)
+LaTeX Warning: Reference `sec:comparacion' on page 2 undefined on input line 9.
+
+
+LaTeX Warning: Citation `pozar' on page 2 undefined on input line 14.
+
+) (Orlando.tex [2]
+
+LaTeX Warning: Citation `rogers' on page 3 undefined on input line 5.
+
+
+LaTeX Warning: Citation `pozar' on page 3 undefined on input line 5.
+
+[3]
+
+LaTeX Warning: Reference `sec:correccion' on page 4 undefined on input line 94.
+
+[4]
+
+LaTeX Warning: Reference `sec:ajuste' on page 5 undefined on input line 112.
+
+) (Griego.tex) (Angel.tex) (America.tex) (Julio.tex) (Abdiel.tex) [5] (main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 
 
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+(rerunfilecheck)             Checksum: C7C2CBD8F35ECACAB8468E51793B8CE8;2117.
  ) 
 Here is how much of TeX's memory you used:
- 53723 strings out of 467867
- 1309202 string characters out of 5419303
- 1993367 words of memory out of 5000000
- 81995 multiletter control sequences out of 15000+600000
- 636208 words of font info for 91 fonts, out of 8000000 for 9000
+ 53946 strings out of 467867
+ 1311807 string characters out of 5419303
+ 2010579 words of memory out of 5000000
+ 82085 multiletter control sequences out of 15000+600000
+ 644740 words of font info for 163 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 98i,6n,108p,1035b,1038s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\BMO\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcbx1728.pk><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (1 page, 88270 bytes).
+ 98i,11n,108p,3940b,1225s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\BMO\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\BMO\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcbx1728.pk><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/BMO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb>
+Output written on main.pdf (5 pages, 282338 bytes).
 PDF statistics:
- 86 PDF objects out of 1000 (max. 8388607)
- 3 named destinations out of 1000 (max. 500000)
- 23197 words of extra memory for PDF output out of 24883 (max. 10000000)
+ 243 PDF objects out of 1000 (max. 8388607)
+ 28 named destinations out of 1000 (max. 500000)
+ 39149 words of extra memory for PDF output out of 42996 (max. 10000000)
 

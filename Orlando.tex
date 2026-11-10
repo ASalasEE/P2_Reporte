@@ -1,0 +1,114 @@
+\section{Metodología común}
+
+\subsection{Sustrato y diseño de las líneas}
+\label{sec:diseno}
+Se eligió el laminado Rogers RO4003C, con $h=\SI{0.508}{mm}$, $\varepsilon_r=3.55$ y $\tan\delta=0.0027$, y conductores de cobre \cite{rogers}. Para la línea de \SI{50}{\ohm} ($W/h>2$), la síntesis de \cite{pozar} da
+\begin{gather}
+B = \frac{377\pi}{2Z_0\sqrt{\varepsilon_r}} = 6.286, \nonumber\\[4pt]
+\frac{W}{h} = \frac{2}{\pi}\left[B-1-\ln(2B-1)+\frac{\varepsilon_r-1}{2\varepsilon_r}\left(\ln(B-1)+0.39-\frac{0.61}{\varepsilon_r}\right)\right] = 2.237,
+\label{eq:sintesis}
+\end{gather}
+es decir, $W=\SI{1.136}{mm}$, que se redondeó a $W=W_1=\SI{1.14}{mm}$. Con este valor, \eqref{eq:eeff} y \eqref{eq:z0} dan
+\[
+\varepsilon_{\mathrm{eff}} = 2.781, \qquad Z_0 = \SI{50.15}{\ohm},
+\]
+y por \eqref{eq:lg} la longitud de onda guiada es $\lambda_g=\SI{17.99}{mm}$ a \SI{10}{GHz} y $\lambda_g=\SI{8.99}{mm}$ a \SI{20}{GHz}. Para la línea de \SI{100}{\ohm} de la discontinuidad 2 ($W/h<2$) la síntesis es
+\begin{equation}
+A = \frac{Z_0}{60}\sqrt{\frac{\varepsilon_r+1}{2}} + \frac{\varepsilon_r-1}{\varepsilon_r+1}\left(0.23+\frac{0.11}{\varepsilon_r}\right) = 2.660, \qquad
+\frac{W}{h} = \frac{8e^A}{e^{2A}-2} = 0.565,
+\label{eq:sintesis100}
+\end{equation}
+es decir, $W=\SI{0.287}{mm}$, redondeado a $W_2=\SI{0.29}{mm}$, con $\varepsilon_{\mathrm{eff}}=2.547$ y $Z_0=\SI{99.6}{\ohm}$.
+
+\subsection{Configuración de la simulación}
+\label{sec:config}
+Se usó Ansys Electronics Desktop Student 2025~R2 (HFSS, solución \emph{Driven Modal}). Todos los modelos se generaron con scripts de automatización, de modo que comparten exactamente la misma configuración:
+\begin{itemize}
+\item \textbf{Conductores:} láminas de espesor cero con conductividad finita de cobre para la traza y el plano de tierra (en la discontinuidad 4, uno de los casos lleva estaño en la segunda mitad de la traza).
+\item \textbf{Frontera abierta:} caja de aire con frontera de radiación, a \SI{7}{mm} del borde de la traza más ancha a los lados y con altura total $14h=\SI{7.1}{mm}$.
+\item \textbf{Puertos:} puertos de onda de un modo, de ancho $P_w=5W_1=\SI{5.7}{mm}$ y altura $8h=\SI{4.06}{mm}$, iguales en todos los diseños. El ancho se limitó para que el primer modo de caja del puerto, cuya frecuencia de corte se estima como $f_c\approx c/\left(2P_w\sqrt{\varepsilon_\perp}\right)\approx\SI{25}{GHz}$ con $\varepsilon_\perp=\frac{8h}{7h+h/\varepsilon_r}$, quede fuera de la banda.
+\item \textbf{Normalización y de-embedding:} en la curva, ambos puertos están sobre líneas de \SI{50}{\ohm} y los parámetros $S$ se renormalizaron a \SI{50}{\ohm}. En las demás discontinuidades cada puerto se dejó referido a la impedancia de su propia línea (Sección~\ref{sec:sparam}); renormalizar el puerto de la línea de \SI{100}{\ohm} a \SI{50}{\ohm} agregaría una segunda reflexión que no existe en el circuito real. En ambos casos los planos de referencia se desplazaron hacia adentro hasta la discontinuidad.
+\item \textbf{Malla y barrido:} refinamiento adaptativo a \SI{20}{GHz} hasta $\max|\Delta S|<0.005$ en dos pases consecutivos, y barrido interpolante de \SI{0.1}{} a \SI{20}{GHz} con paso de \SI{50}{MHz}.
+\item \textbf{Gemelos sin pérdidas:} de cada estructura se simuló además una copia con conductores perfectos y $\tan\delta=0$, cuyo uso se explica en la Sección~\ref{sec:validacion}.
+\end{itemize}
+La Tabla~\ref{tab:conv} resume la convergencia. La versión estudiantil limita el tamaño de la malla, y todos los diseños quedaron por debajo de ese límite. Solo la transición gradual sin pérdidas, la estructura más larga, se detuvo en el pase 14 (\num{51971} elementos), porque el pase siguiente (\num{70962} elementos) excedía el límite; en ese pase ya cumplía el criterio de convergencia. En el gap, cinco diseños llegaron al máximo de 15 pases con un solo pase bajo el criterio; su último $\max|\Delta S|$ es a lo sumo 0.0054, y los gemelos con y sin pérdidas dan los mismos parámetros del circuito dentro de la incertidumbre. Los 16 diseños del cambio de material y los 10 de la unión en T convergieron con el criterio completo, con a lo sumo \num{46786} elementos; el divisor sin pérdidas lo hizo en el último pase permitido.
+
+\begin{table}[htbp]
+\centering
+\caption{Convergencia de la malla adaptativa.}
+\label{tab:conv}
+\footnotesize
+\renewcommand{\arraystretch}{0.86}
+\begin{tabular}{lccc}
+\toprule
+Diseño & Pases & Elementos & $\max|\Delta S|$ final \\
+\midrule
+\multicolumn{4}{l}{\textit{Discontinuidad 1: curva de \ang{90}}} \\
+Referencia & 11 & \num{14911} & 0.0029 \\
+Curva sin chaflán & 14 & \num{23962} & 0.0045 \\
+Curva con chaflán & 10 & \num{11127} & 0.0025 \\
+Referencia sin pérdidas & 10 & \num{11485} & 0.0042 \\
+Curva sin chaflán, sin pérdidas & 13 & \num{20687} & 0.0045 \\
+Curva con chaflán, sin pérdidas & 13 & \num{24533} & 0.0030 \\
+\midrule
+\end{tabular}
+\end{table}
+
+\subsection{Validación del modelo y tratamiento del error numérico}
+\label{sec:validacion}
+Una primera versión del modelo (caja de aire con \SI{4}{mm} de margen y $8h$ de altura, criterio $\max|\Delta S|<0.02$) reproducía bien $S_{11}$ de la curva, pero el balance \eqref{eq:balance} de la línea recta mostraba una pérdida aparente de hasta 4\,\%, demasiado alta para un tramo de \SI{1.14}{mm}. Para encontrar su origen se simularon variantes de la referencia que aíslan una causa a la vez (Tabla~\ref{tab:diag}):
+\begin{itemize}
+\item La variante sin pérdidas conserva casi toda la pérdida aparente, así que no es pérdida física sino un artefacto del modelo.
+\item Sin de-embedding la pérdida aumenta en \SI{1.8}{\percent} (\SI{0.08}{dB}) a \SI{10}{GHz}, del orden de la pérdida de cobre y dieléctrico estimada para los \SI{12}{mm} de alimentación (\SI{0.09}{dB}). El de-embedding funciona correctamente.
+\item Agrandar la caja de aire reduce el artefacto: la frontera de radiación demasiado cercana absorbía parte del campo cercano de la línea.
+\item Refinar la malla cambió poco el resultado: el residuo que queda proviene de la transición entre el puerto, que tiene bordes conductores, y la línea abierta que lo rodea.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Pérdida aparente $P=1-|S_{11}|^2-|S_{21}|^2$ de la línea de referencia de la curva a \SI{10}{GHz} en las variantes de diagnóstico.}
+\label{tab:diag}
+\small
+\begin{tabular}{llc}
+\toprule
+Variante & Cambio respecto al modelo inicial & $P$ (\%) \\
+\midrule
+Inicial & caja de \SI{4}{mm} y $8h$, $\max|\Delta S|<0.02$ & 4.00 \\
+R2 & sin pérdidas (PEC, $\tan\delta=0$) & 3.57 \\
+R3 & sin de-embedding & 5.77 \\
+R4 & caras de los puertos conductoras & 3.65 \\
+R5 & caja de \SI{7}{mm} y $14h$ & 2.65 \\
+R6 & R5 + caras conductoras & 1.64 \\
+R7 & R6 sin pérdidas & 1.10 \\
+Final & caja de \SI{7}{mm} y $14h$, $\max|\Delta S|<0.005$ & 2.77 \\
+Final sin pérdidas & gemelo sin pérdidas del modelo final & 2.10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ese residuo es común a todas las estructuras, porque todas tienen los mismos puertos y la misma alimentación. Por eso se eliminó por diferencia, usando los gemelos sin pérdidas. Si $P_X$ es la pérdida aparente de la estructura $X$ y $P_{X0}$ la de su gemelo sin pérdidas, entonces
+\begin{equation}
+P_{\mathrm{rad}} = P_{X0} - P_{A0}, \qquad P_{\mathrm{dis}} = P_X - P_{X0},
+\label{eq:separacion}
+\end{equation}
+donde $A0$ es la referencia sin pérdidas. Por debajo de \SI{6}{GHz} la radiación de la curva debe ser nula, y ahí \eqref{eq:separacion} da valores dentro de $\pm\SI{0.2}{\percent}$, que se toma como la incertidumbre de $P_{\mathrm{rad}}$. Por la misma razón, el nivel de $|S_{11}|$ de la referencia (alrededor de $-30$ a \SI{-45}{dB}) es el piso por debajo del cual no se puede resolver la reflexión de una discontinuidad. En las demás discontinuidades se dio un paso más y el mismo residuo se quitó de los parámetros $S$ completos (Sección~\ref{sec:correccion}).
+
+\subsection{Extracción del circuito equivalente de la curva}
+\label{sec:extraccion}
+Como las estructuras de la curva son simétricas y recíprocas ($S_{22}=S_{11}$, $S_{12}=S_{21}$), los parámetros $S$ se convirtieron a parámetros $Z$,
+\begin{equation}
+Z_{11} = Z_0\,\frac{(1+S_{11})(1-S_{22})+S_{12}S_{21}}{\Delta}, \qquad
+Z_{21} = Z_0\,\frac{2S_{21}}{\Delta}, \qquad
+\Delta = (1-S_{11})(1-S_{22})-S_{12}S_{21},
+\label{eq:zparam}
+\end{equation}
+y de ellos se obtuvieron los elementos de la red en T de cada estructura,
+\begin{equation}
+C = -\frac{1}{\omega\,\mathrm{Im}\{Z_{21}\}}, \qquad
+L = \frac{\mathrm{Im}\{Z_{11}-Z_{21}\}}{\omega}, \qquad
+Z_{eq} = \sqrt{\frac{2L}{C}}.
+\label{eq:LC}
+\end{equation}
+Para la referencia estos valores corresponden simplemente al tramo recto de longitud $W$ que queda entre los planos de referencia, lo que permite comparar la esquina contra un tramo recto de la misma área de metal. El cambio de ancho requiere otro procedimiento, que se describe en la Sección~\ref{sec:ajuste}.
+
+%======================================================================
