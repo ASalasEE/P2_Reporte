@@ -503,11 +503,52 @@ Corrección o variante & Chaflán: elimina la reflexión en toda la banda, no la
 
 \clearpage
 
+\section{Transmisión ($S_{21}$) y Balance de Potencia}
+\label{sec:transmision_balance}
+
+\subsection{Teoría del Coeficiente de Transmisión}
+El parámetro $S_{21}$ representa el coeficiente de transmisión directa. Físicamente, mide la fracción de la onda electromagnética que ingresa por el Puerto 1 y logra atravesar la línea hasta salir por el Puerto 2, asumiendo que este último está perfectamente adaptado. Idealmente, una pista sin pérdidas ni discontinuidades tendría un $|S_{21}| = \SI{0}{dB}$. Sin embargo, cualquier obstáculo geométrico o atenuación del material reducirá este valor.
+
+\subsection{Resultados de Transmisión y Pérdida de Inserción}
+Las simulaciones confirman la predicción teórica sobre el impacto de la desadaptación en la transmisión de la señal. Como se observa en los resultados extraídos de HFSS, la pérdida de inserción en la curva sin compensar está fuertemente dominada por la reflexión generada en la esquina. A \SI{10}{GHz}, la curva pierde \SI{0.26}{dB}, y al llegar a \SI{20}{GHz}, la pérdida asciende a \SI{0.87}{dB}. De estos \SI{0.87}{dB} perdidos, \SI{0.52}{dB} provienen exclusivamente de la potencia que rebotó hacia la fuente. 
+
+Al aplicar el chaflán óptimo del 55\%, la capacitancia parásita se corrige, la adaptación de impedancia se recupera y, en consecuencia, la transmisión mejora radicalmente: la pérdida de inserción a \SI{20}{GHz} se reduce a tan solo \SI{0.26}{dB}.
+
+\subsection{Balance de Potencia y Compromisos de Diseño (Trade-offs)}
+\label{subsec:balance_tradeoffs}
+El diseño de microcintas no consiste en alcanzar el ideal electromagnético, sino en gestionar los compromisos (\textit{trade-offs}) regidos por el balance de la energía (Ecuación \ref{eq:balance_potencia}):
+\begin{equation}
+    1 = |S_{11}|^2 + |S_{21}|^2 + P_{rad} + P_{dis}
+    \label{eq:balance_potencia}
+\end{equation}
+Dado que la energía inyectada (100\%) es finita, cualquier incremento en la reflexión o en las pérdidas reducirá matemáticamente la potencia transmitida ($S_{21}$). En la Tabla \ref{tab:tradeoffs} se resumen los dos principales compromisos que el diseñador de RF debe enfrentar.
+
+\begin{table}[htpb]
+    \centering
+    \caption{Compromisos de diseño (Trade-offs) en base al balance de potencia}
+    \label{tab:tradeoffs}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{p{4cm} p{5.5cm} p{5.5cm}}
+        \toprule
+        \textbf{Trade-off} & \textbf{Causa Física} & \textbf{Efecto y Mitigación} \\
+        \midrule
+        \textbf{Geometría vs. Reflexión} \newline ($S_{11}$ vs. $S_{21}$) & Doblar la pista es necesario para acomodar circuitos en un área limitada, pero rompe el equilibrio $L/C$, generando reactancia. & Sube el $|S_{11}|^2$, obligando a que el $|S_{21}|^2$ caiga. Se mitiga sacrificando metal en la esquina exterior (chaflán). \\
+        \textbf{Materiales vs. Costo} \newline ($P_{\text{pérdidas}}$ vs. $S_{21}$) & Usar sustratos económicos (ej. FR-4) aumenta la tangente de pérdida ($\tan\delta$), disipando la onda como calor. & El término $P_{dis}$ se incrementa. Se mitiga invirtiendo en sustratos de alto desempeño como RO4003C a costa del presupuesto. \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Aplicaciones reales}
+\label{sec:aplicaciones_reales}
+
+En el desarrollo de circuitos impresos (PCB) para sistemas de radiofrecuencia y microondas, el control riguroso de las discontinuidades geométricas es imperativo. En un PCB típico a frecuencias de varios GHz, las longitudes de onda guiadas ($\lambda_g$) se reducen al mismo orden de magnitud que el tamaño de las pistas (por ejemplo, $\lambda_g = \SI{8.99}{mm}$ a \SI{20}{GHz}). 
+
+Debido a esta relación de escala, una esquina recta ordinaria deja de ser eléctricamente pequeña y comienza a comportarse como un obstáculo reactivo significativo, además de fungir como un elemento radiador indeseado. Por lo tanto, en los diseños prácticos de PCBs de RF, las trazas de enrutamiento nunca deben girar abruptamente; se exige la implementación de chaflanes (cortes compensatorios típicamente a \ang{45}) para preservar la adaptación de impedancia, evitar antenas parásitas cruzadas y maximizar la transmisión directa de la señal.
+
+
 \section{Conclusiones}
 
 \textbf{Curva de \ang{90}.} La curva se comporta como una discontinuidad capacitiva: la esquina conserva la capacitancia de un tramo recto, pero la corriente la atraviesa por un camino más corto y su inductancia es menos de la mitad, por lo que equivale a un tramo corto de $\approx\SI{32}{\ohm}$ dentro de la línea de \SI{50}{\ohm}. Como la reactancia neta crece con $\omega$, la reflexión aumenta con la frecuencia y se vuelve significativa ($|S_{11}|>-20$~dB) a partir de \SI{7.00}{GHz}, cuando la esquina mide apenas $\lambda_g/16$. A frecuencias mayores se suma la radiación, causada por el cambio de dirección de la corriente.
-
-
 \begin{thebibliography}{9}
 \bibitem{pozar} D.~M. Pozar, \emph{Microwave Engineering}, 4th~ed. Hoboken, NJ, USA: Wiley, 2012.
 \bibitem{gupta} K.~C. Gupta, R.~Garg, I.~Bahl y P.~Bhartia, \emph{Microstrip Lines and Slotlines}, 2nd~ed. Boston, MA, USA: Artech House, 1996.
